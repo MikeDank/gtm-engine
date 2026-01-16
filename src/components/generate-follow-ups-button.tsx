@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 
 interface GenerateFollowUpsButtonProps {
   leadId: string;
+  disabled?: boolean;
 }
 
 export function GenerateFollowUpsButton({
   leadId,
+  disabled = false,
 }: GenerateFollowUpsButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,11 @@ export function GenerateFollowUpsButton({
 
   return (
     <div className="space-y-2">
-      <Button onClick={handleClick} disabled={isLoading} variant="outline">
+      <Button
+        onClick={handleClick}
+        disabled={isLoading || disabled}
+        variant="outline"
+      >
         {isLoading ? "Generating..." : "Generate Follow-ups"}
       </Button>
       {success && (

@@ -307,7 +307,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Touchpoints</CardTitle>
-          <GenerateFollowUpsButton leadId={id} />
+          <GenerateFollowUpsButton
+            leadId={id}
+            disabled={
+              lead.pipelineStatus === "replied" ||
+              lead.pipelineStatus === "meeting_booked" ||
+              lead.pipelineStatus === "not_interested"
+            }
+          />
         </CardHeader>
         <CardContent>
           <TouchpointsList
