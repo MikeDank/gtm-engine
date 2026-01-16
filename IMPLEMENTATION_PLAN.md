@@ -16,7 +16,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Insert parsed RSS items as Signals into DB (source=feed URL, excerpt=title+description)
 - [x] Add `pnpm db:seed` script that inserts demo Signals for development
 - [x] Add sample RSS feed URLs to README for testing
-- [ ] Verify end-to-end: run `pnpm runner ingest:rss <url>` → signals appear in DB
+- [x] Verify end-to-end: run `pnpm runner ingest:rss <url>` → signals appear in DB
 
 ## Phase 1: Signal Inbox (DB-Backed UI)
 
