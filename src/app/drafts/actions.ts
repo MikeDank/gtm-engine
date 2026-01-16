@@ -1,6 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { sendEmail } from "@/lib/email/resend";
+import { checkEmailRateLimit, recordEmailSent } from "@/lib/email/rate-limiter";
 import { generateDraft, generateAngleDrafts } from "@/lib/template-generator";
 import { chat, LlmError } from "@/lib/llm";
 import {
@@ -281,4 +283,89 @@ export async function createLlmDrafts(
   }
 
   return { drafts };
+}
+
+export interface SendEmailDraftResult {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}
+
+export async function sendEmailDraft(
+  draftId: string
+): Promise<SendEmailDraftResult> {
+  const draft = await db.draft.findUnique({
+    where: { id: draftId },
+    include: { lead: true },
+  });
+
+  if (!draft) {
+    return { success: false, error: "Draft not found" };
+  }
+
+  if (draft.channel !== "email") {
+    return { success: false, error: "Draft is not an email draft" };
+  }
+
+  if (!draft.lead) {
+    return { success: false, error: "Draft has no associated lead" };
+  }
+
+  if (!draft.lead.email) {
+    return {
+      success: false,
+      error: "Lead has no email address. Add email on lead first.",
+    };
+  }
+
+  if (!draft.subject || draft.subject.trim() === "") {
+    return { success: false, error: "Email subject is required" };
+  }
+
+  if (!draft.content || draft.content.trim() === "") {
+    return { success: false, error: "Email content is required" };
+  }
+
+  const emailFrom = process.env.EMAIL_FROM;
+  if (!emailFrom) {
+    return {
+      success: false,
+      error: "EMAIL_FROM is not configured. Add it to your .env file.",
+    };
+  }
+
+  const rateLimitCheck = checkEmailRateLimit();
+  if (!rateLimitCheck.allowed) {
+    const retrySeconds = Math.ceil((rateLimitCheck.retryAfterMs || 0) / 1000);
+    return {
+      success: false,
+      error: `Rate limit exceeded. Try again in ${retrySeconds} seconds.`,
+    };
+  }
+
+  const result = await sendEmail({
+    to: draft.lead.email,
+    from: emailFrom,
+    subject: draft.subject,
+    text: draft.content,
+    html: `<pre style="font-family: sans-serif; white-space: pre-wrap;">${draft.content}</pre>`,
+  });
+
+  if (result.status === "error") {
+    return { success: false, error: result.error };
+  }
+
+  recordEmailSent();
+
+  await db.touchpoint.create({
+    data: {
+      leadId: draft.lead.id,
+      channel: "email",
+      draftId: draft.id,
+      status: "sent",
+      sentAt: new Date(),
+    },
+  });
+
+  return { success: true, messageId: result.id };
 }

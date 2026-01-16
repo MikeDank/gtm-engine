@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SendEmailButton } from "@/components/send-email-button";
 import { updateDraft } from "../actions";
 
 interface DraftEditorProps {
@@ -12,6 +14,8 @@ interface DraftEditorProps {
   channel: string;
   initialSubject: string | null;
   initialContent: string;
+  leadEmail: string | null;
+  emailFrom: string | null;
 }
 
 export function DraftEditor({
@@ -19,12 +23,19 @@ export function DraftEditor({
   channel,
   initialSubject,
   initialContent,
+  leadEmail,
+  emailFrom,
 }: DraftEditorProps) {
+  const router = useRouter();
   const [subject, setSubject] = useState(initialSubject || "");
   const [content, setContent] = useState(initialContent);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sendStatus, setSendStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   async function handleSave() {
     setIsSaving(true);
@@ -79,14 +90,42 @@ export function DraftEditor({
             placeholder="Message content..."
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button onClick={handleSave} disabled={isSaving}>
             {isSaving ? "Saving..." : saved ? "Saved!" : "Save"}
           </Button>
           <Button variant="outline" onClick={handleCopy}>
             {copied ? "Copied!" : "Copy to Clipboard"}
           </Button>
+          {channel === "email" && (
+            <SendEmailButton
+              draftId={draftId}
+              leadEmail={leadEmail}
+              emailFrom={emailFrom}
+              onSuccess={(messageId) => {
+                setSendStatus({
+                  type: "success",
+                  message: `Sent! Message ID: ${messageId}`,
+                });
+                router.refresh();
+              }}
+              onError={(error) => {
+                setSendStatus({ type: "error", message: error });
+              }}
+            />
+          )}
         </div>
+        {sendStatus && (
+          <div
+            className={`rounded-md p-3 text-sm ${
+              sendStatus.type === "success"
+                ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                : "bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+            }`}
+          >
+            {sendStatus.message}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
