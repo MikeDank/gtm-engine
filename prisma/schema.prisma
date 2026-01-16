@@ -48,3 +48,13 @@ model Draft {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model LlmSettings {
+  id             String   @id @default("default")
+  provider       String   @default("openai") // "openai" | "anthropic"
+  model          String   @default("gpt-4o-mini")
+  temperature    Float    @default(0.7)
+  maxTokens      Int      @default(1024)
+  dailyCostLimit Float    @default(10.0) // UI only, no enforcement yet
+  updatedAt      DateTime @updatedAt
+}
