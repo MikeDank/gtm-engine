@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import type { LlmProvider } from "@/lib/llm/types";
+import { getApiKey } from "@/lib/llm";
 
 const DEFAULT_SETTINGS_ID = "default";
 
@@ -73,5 +74,15 @@ export async function upsertLlmSettings(data: {
     temperature: settings.temperature,
     maxTokens: settings.maxTokens,
     dailyCostLimit: settings.dailyCostLimit,
+  };
+}
+
+export async function checkApiKeyStatus(): Promise<{
+  openai: boolean;
+  anthropic: boolean;
+}> {
+  return {
+    openai: !!getApiKey("openai"),
+    anthropic: !!getApiKey("anthropic"),
   };
 }
