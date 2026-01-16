@@ -107,7 +107,25 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Wire tone.md into LLM draft prompt generator
 - [x] Add Context link to navigation
 
-## Phase 8: Polish & Cleanup
+## Phase 8: Signal Angle Mapping & Draft Variants
+
+- [ ] Create src/lib/angles.ts with ANGLES constant array and Angle type
+- [ ] Add Signal.angle field (nullable string) to Prisma schema
+- [ ] Add Draft.angle and Draft.hypothesis fields (nullable strings) to Prisma schema
+- [ ] Run Prisma migration for angle fields
+- [ ] Implement classifyAngleFromSignal(excerpt) at src/lib/angle-classifier.ts
+- [ ] Create AngleBadge component at src/components/ui/angle-badge.tsx
+- [ ] Update /signals list page to show angle badge for each signal
+- [ ] Update /signals/[id] detail page to show angle badge
+- [ ] Add angle dropdown selector to /signals/[id] for manual override
+- [ ] Create server action to update signal angle
+- [ ] Update template generator to accept angle and generate 2 framing variants (metric/risk)
+- [ ] Update template generator to generate hypothesis from signal excerpt
+- [ ] Update LLM draft prompt to include angle context
+- [ ] Update LLM draft generation to create 2 angle-based variants with hypothesis
+- [ ] Update DraftMessageDialog to show angle-based variant options
+
+## Phase 9: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches
