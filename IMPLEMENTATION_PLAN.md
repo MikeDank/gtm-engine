@@ -20,7 +20,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 1: Signal Inbox (DB-Backed UI)
 
-- [ ] Create server action to fetch all signals from DB
+- [x] Create server action to fetch all signals from DB
 - [ ] Update `/signals` page to display signals from DB (table/list)
 - [ ] Add status badge component for signal status (pending, reviewed, converted, discarded)
 - [ ] Implement signal status filter (tabs or dropdown)
