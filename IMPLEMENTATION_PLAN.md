@@ -206,7 +206,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add stop rule: disable SendPlannedTouchpointButton when lead is paused
 - [x] Add "Follow-ups paused" banner to lead detail page when lead is paused
 - [x] Update TouchpointsList to show visual cue when lead is paused
-- [ ] Update Attio note content to include pipeline status when syncing
+- [x] Update Attio note content to include pipeline status when syncing
 
 ## Phase 12: Polish & Cleanup
 

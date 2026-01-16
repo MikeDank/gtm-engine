@@ -149,6 +149,7 @@ function buildAttioNoteMarkdown(
     company: string | null;
     email: string | null;
     linkedinUrl: string | null;
+    pipelineStatus: string;
   },
   icpScore: { score: number; reasons: string[] },
   signal: {
@@ -178,6 +179,12 @@ function buildAttioNoteMarkdown(
   if (lead.company) lines.push(`- **Company:** ${lead.company}`);
   if (lead.email) lines.push(`- **Email:** ${lead.email}`);
   if (lead.linkedinUrl) lines.push(`- **LinkedIn:** ${lead.linkedinUrl}`);
+  lines.push(`- **Pipeline Status:** ${lead.pipelineStatus}`);
+
+  const pausedStatuses = ["replied", "meeting_booked", "not_interested"];
+  if (pausedStatuses.includes(lead.pipelineStatus)) {
+    lines.push(`- **⚠️ Follow-ups paused**`);
+  }
   lines.push("");
 
   lines.push("## ICP Score");
