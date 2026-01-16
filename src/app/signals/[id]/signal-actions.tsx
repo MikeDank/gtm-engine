@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ConvertToLeadDialog } from "@/components/convert-to-lead-dialog";
 import { updateSignalStatus } from "../actions";
 
 interface SignalActionsProps {
@@ -28,12 +29,7 @@ export function SignalActions({ signalId, currentStatus }: SignalActionsProps) {
         </Button>
       )}
       {currentStatus !== "converted" && (
-        <Button
-          variant="outline"
-          onClick={() => handleStatusChange("converted")}
-        >
-          Convert to Lead
-        </Button>
+        <ConvertToLeadDialog signalId={signalId} />
       )}
       {currentStatus !== "discarded" && (
         <Button
