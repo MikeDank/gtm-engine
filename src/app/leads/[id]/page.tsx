@@ -13,18 +13,33 @@ interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-function exportDripifyCsv(
-  leadName: string,
-  company: string | null,
-  message: string
-): string {
+interface DripifyExportData {
+  leadName: string;
+  company: string | null;
+  role: string | null;
+  angle: string | null;
+  icpScore: number;
+  variantKey: string;
+  hypothesis: string | null;
+  message: string;
+  sourceUrl: string | null;
+}
+
+function exportDripifyCsv(data: DripifyExportData): string {
   const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
-  const header = "lead_name,company,linkedin_url,message";
+  const header =
+    "lead_name,company,role,linkedin_url,angle,icp_score,variant_key,hypothesis,message,source_url";
   const row = [
-    escapeCsv(leadName),
-    escapeCsv(company || ""),
+    escapeCsv(data.leadName),
+    escapeCsv(data.company || ""),
+    escapeCsv(data.role || ""),
     '""',
-    escapeCsv(message),
+    escapeCsv(data.angle || ""),
+    String(data.icpScore),
+    escapeCsv(data.variantKey),
+    escapeCsv(data.hypothesis || ""),
+    escapeCsv(data.message),
+    escapeCsv(data.sourceUrl || ""),
   ].join(",");
   return `${header}\n${row}`;
 }
@@ -48,7 +63,17 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   );
 
   const dripifyCsv = latestLinkedInDraft
-    ? exportDripifyCsv(lead.name, lead.company, latestLinkedInDraft.content)
+    ? exportDripifyCsv({
+        leadName: lead.name,
+        company: lead.company,
+        role: lead.role,
+        angle: latestLinkedInDraft.angle,
+        icpScore: icpScore.score,
+        variantKey: latestLinkedInDraft.variantKey,
+        hypothesis: latestLinkedInDraft.hypothesis,
+        message: latestLinkedInDraft.content,
+        sourceUrl: lead.signal?.source || null,
+      })
     : null;
 
   return (
