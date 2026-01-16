@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { getDraftById } from "../actions";
 import { DraftEditor } from "./draft-editor";
 
+function getEmailFrom(): string | null {
+  return process.env.EMAIL_FROM || null;
+}
+
 interface DraftDetailPageProps {
   params: Promise<{ id: string }>;
 }
@@ -14,6 +18,7 @@ export default async function DraftDetailPage({
 }: DraftDetailPageProps) {
   const { id } = await params;
   const draft = await getDraftById(id);
+  const emailFrom = getEmailFrom();
 
   if (!draft) {
     notFound();
@@ -54,6 +59,8 @@ export default async function DraftDetailPage({
         channel={draft.channel}
         initialSubject={draft.subject}
         initialContent={draft.content}
+        leadEmail={draft.lead.email}
+        emailFrom={emailFrom}
       />
     </div>
   );
