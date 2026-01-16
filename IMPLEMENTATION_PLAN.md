@@ -26,7 +26,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Implement signal status filter (tabs or dropdown)
 - [x] Create signal detail view (`/signals/[id]`)
 - [x] Add server action to update signal status
-- [ ] Wire up status change buttons on signal detail page
+- [x] Wire up status change buttons on signal detail page
 
 ## Phase 2: Signal Management
 

@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { SignalStatusBadge } from "@/components/signal-status-badge";
 import { getSignalById } from "../actions";
+import { SignalActions } from "./signal-actions";
 
 interface SignalDetailPageProps {
   params: Promise<{ id: string }>;
@@ -72,17 +72,7 @@ export default async function SignalDetailPage({
         </Card>
       </div>
 
-      <div className="flex gap-2">
-        <Button variant="outline" disabled>
-          Mark as Reviewed
-        </Button>
-        <Button variant="outline" disabled>
-          Convert to Lead
-        </Button>
-        <Button variant="outline" disabled>
-          Discard
-        </Button>
-      </div>
+      <SignalActions signalId={signal.id} currentStatus={signal.status} />
     </div>
   );
 }
