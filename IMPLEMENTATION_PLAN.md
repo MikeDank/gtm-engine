@@ -156,7 +156,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 9.6: Email Sending (Resend)
 
-- [ ] Add RESEND_API_KEY and EMAIL_FROM to .env.example with instructions
+- [x] Add RESEND_API_KEY and EMAIL_FROM to .env.example with instructions
 - [ ] Create email sending service at src/lib/email/resend.ts with sendEmail function
 - [ ] Create in-memory rate limiter utility at src/lib/email/rate-limiter.ts (max 5 emails/minute)
 - [ ] Create sendEmailDraft server action at src/app/drafts/actions.ts
