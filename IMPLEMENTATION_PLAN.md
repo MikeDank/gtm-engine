@@ -165,6 +165,17 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add toast notifications for send success/failure feedback
 - [x] Verify end-to-end: send email draft → touchpoint logged with status "sent"
 
+## Phase 9.7: Attio CRM Sync v1
+
+- [x] Add ATTIO_API_KEY to .env.example with instructions
+- [x] Add attioPersonId, attioCompanyId, attioSyncedAt fields to Lead model
+- [x] Run Prisma migration for Attio sync fields
+- [x] Create Attio client at src/lib/attio/client.ts with upsertCompany, upsertPerson, addNoteToPerson
+- [x] Create syncLeadToAttio server action at src/app/leads/[id]/actions.ts
+- [x] Create SyncToAttioButton client component with loading/success/error states
+- [x] Add SyncToAttioButton and sync status display to lead detail page
+- [x] Verify end-to-end: sync lead → records created in Attio with note
+
 ## Phase 10: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages

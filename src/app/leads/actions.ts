@@ -2,6 +2,13 @@
 
 import { db } from "@/lib/db";
 import { enrichWithApollo } from "@/lib/apollo";
+import {
+  upsertCompany,
+  upsertPerson,
+  addNoteToPerson,
+} from "@/lib/attio/client";
+import { getActiveContextDoc } from "@/app/context/actions";
+import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { revalidatePath } from "next/cache";
 
 export async function createLeadFromSignal(
@@ -86,4 +93,193 @@ export async function enrichLeadWithApollo(leadId: string) {
 
   revalidatePath(`/leads/${leadId}`);
   return { success: true, data: result.data };
+}
+
+export interface SyncToAttioResult {
+  success: boolean;
+  personId?: string;
+  companyId?: string;
+  error?: string;
+}
+
+function buildAttioNoteMarkdown(
+  lead: {
+    name: string;
+    role: string | null;
+    company: string | null;
+    email: string | null;
+    linkedinUrl: string | null;
+  },
+  icpScore: { score: number; reasons: string[] },
+  signal: {
+    excerpt: string;
+    source: string;
+    capturedAt: Date;
+    angle: string | null;
+  } | null,
+  drafts: {
+    channel: string;
+    angle: string | null;
+    variantKey: string;
+    hypothesis: string | null;
+    content: string;
+  }[],
+  touchpoints: {
+    channel: string;
+    status: string;
+    sentAt: Date | null;
+  }[]
+): string {
+  const lines: string[] = [];
+
+  lines.push("## Lead Summary");
+  lines.push(`- **Name:** ${lead.name}`);
+  if (lead.role) lines.push(`- **Role:** ${lead.role}`);
+  if (lead.company) lines.push(`- **Company:** ${lead.company}`);
+  if (lead.email) lines.push(`- **Email:** ${lead.email}`);
+  if (lead.linkedinUrl) lines.push(`- **LinkedIn:** ${lead.linkedinUrl}`);
+  lines.push("");
+
+  lines.push("## ICP Score");
+  lines.push(`**Score:** ${icpScore.score}/100`);
+  lines.push("");
+  lines.push("**Reasons:**");
+  for (const reason of icpScore.reasons) {
+    lines.push(`- ${reason}`);
+  }
+  lines.push("");
+
+  if (signal) {
+    lines.push("## Source Signal");
+    lines.push(`- **Source URL:** ${signal.source}`);
+    lines.push(
+      `- **Captured At:** ${signal.capturedAt.toISOString().split("T")[0]}`
+    );
+    if (signal.angle) lines.push(`- **Angle:** ${signal.angle}`);
+    lines.push("");
+    lines.push("**Excerpt:**");
+    lines.push(
+      `> ${signal.excerpt.slice(0, 500)}${signal.excerpt.length > 500 ? "..." : ""}`
+    );
+    lines.push("");
+  }
+
+  if (drafts.length > 0) {
+    lines.push("## Drafts");
+    for (const draft of drafts) {
+      lines.push(`### ${draft.channel} - ${draft.variantKey}`);
+      if (draft.angle) lines.push(`- **Angle:** ${draft.angle}`);
+      if (draft.hypothesis) lines.push(`- **Hypothesis:** ${draft.hypothesis}`);
+      lines.push("");
+      lines.push("**Content:**");
+      lines.push(
+        `> ${draft.content.slice(0, 300)}${draft.content.length > 300 ? "..." : ""}`
+      );
+      lines.push("");
+    }
+  }
+
+  if (touchpoints.length > 0) {
+    lines.push("## Touchpoints");
+    for (const tp of touchpoints) {
+      const sentInfo = tp.sentAt
+        ? `Sent ${tp.sentAt.toISOString().split("T")[0]}`
+        : tp.status;
+      lines.push(`- **${tp.channel}:** ${sentInfo}`);
+    }
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
+export async function syncLeadToAttio(
+  leadId: string
+): Promise<SyncToAttioResult> {
+  try {
+    const lead = await db.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        signal: true,
+        drafts: true,
+        touchpoints: true,
+      },
+    });
+
+    if (!lead) {
+      return { success: false, error: "Lead not found" };
+    }
+
+    const icpDoc = await getActiveContextDoc("icp");
+    const icpScore = scoreLeadWithIcp(
+      { name: lead.name, role: lead.role, company: lead.company },
+      lead.signal ? { excerpt: lead.signal.excerpt } : null,
+      icpDoc?.content || null
+    );
+
+    let companyId: string | null = null;
+    if (lead.company) {
+      const companyResult = await upsertCompany({ name: lead.company });
+      if (!companyResult.success) {
+        return {
+          success: false,
+          error: companyResult.error || "Failed to upsert company",
+        };
+      }
+      companyId = companyResult.data?.id || null;
+    }
+
+    const personResult = await upsertPerson({
+      name: lead.name,
+      email: lead.email,
+      linkedinUrl: lead.linkedinUrl,
+      companyName: lead.company,
+      title: lead.role,
+    });
+
+    if (!personResult.success || !personResult.data) {
+      return {
+        success: false,
+        error: personResult.error || "Failed to upsert person",
+      };
+    }
+
+    const personId = personResult.data.id;
+
+    const noteMarkdown = buildAttioNoteMarkdown(
+      lead,
+      icpScore,
+      lead.signal,
+      lead.drafts,
+      lead.touchpoints
+    );
+
+    const noteResult = await addNoteToPerson(personId, noteMarkdown);
+    if (!noteResult.success) {
+      return {
+        success: false,
+        error: noteResult.error || "Failed to add note",
+      };
+    }
+
+    await db.lead.update({
+      where: { id: leadId },
+      data: {
+        attioPersonId: personId,
+        attioCompanyId: companyId,
+        attioSyncedAt: new Date(),
+      },
+    });
+
+    revalidatePath(`/leads/${leadId}`);
+
+    return {
+      success: true,
+      personId,
+      companyId: companyId || undefined,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: message };
+  }
 }
