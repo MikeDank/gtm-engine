@@ -28,28 +28,30 @@ model Signal {
 }
 
 model Lead {
-  id        String   @id @default(cuid())
-  name      String
-  role      String?
-  company   String?
-  signalId  String?  @unique
-  signal    Signal?  @relation(fields: [signalId], references: [id])
-  createdAt DateTime @default(now())
-  drafts    Draft[]
+  id          String       @id @default(cuid())
+  name        String
+  role        String?
+  company     String?
+  signalId    String?      @unique
+  signal      Signal?      @relation(fields: [signalId], references: [id])
+  createdAt   DateTime     @default(now())
+  drafts      Draft[]
+  touchpoints Touchpoint[]
 }
 
 model Draft {
-  id         String   @id @default(cuid())
-  leadId     String
-  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  channel    String   // "email" | "linkedin"
-  subject    String?  // for email only
-  content    String
-  variantKey String   // e.g., "short_cold_opener_v1", "value_first_v1"
-  angle      String?
-  hypothesis String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String       @id @default(cuid())
+  leadId      String
+  lead        Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  channel     String       // "email" | "linkedin"
+  subject     String?      // for email only
+  content     String
+  variantKey  String       // e.g., "short_cold_opener_v1", "value_first_v1"
+  angle       String?
+  hypothesis  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  touchpoints Touchpoint[]
 }
 
 model LlmSettings {
@@ -71,4 +73,18 @@ model ContextDoc {
   createdAt DateTime @default(now())
 
   @@index([type, isActive])
+}
+
+model Touchpoint {
+  id        String    @id @default(cuid())
+  leadId    String
+  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  channel   String    // "email" | "linkedin"
+  draftId   String?
+  draft     Draft?    @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  status    String    @default("planned") // "planned" | "sent"
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([leadId])
 }
