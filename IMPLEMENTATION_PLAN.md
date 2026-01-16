@@ -10,7 +10,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 0: Local Runner + RSS Ingestion
 
-- [ ] Create `runner/` directory with CLI skeleton (using Commander or similar)
+- [x] Create `runner/` directory with CLI skeleton (using Commander or similar)
 - [ ] Add `pnpm runner` script to package.json
 - [ ] Implement `runner ingest:rss <url>` command (fetch + parse RSS feed)
 - [ ] Insert parsed RSS items as Signals into DB (source=feed URL, excerpt=title+description)
