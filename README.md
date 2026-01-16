@@ -58,6 +58,33 @@ pnpm runner ingest:rss "https://www.producthunt.com/feed"
 pnpm runner ingest:rss "https://dev.to/feed"
 ```
 
+## GitHub Ingestion
+
+Ingest signals from GitHub repositories (recently merged PRs):
+
+```bash
+pnpm runner ingest:github <owner/repo>
+```
+
+### Setup
+
+1. Create a GitHub Personal Access Token at https://github.com/settings/tokens
+2. Add it to your `.env` file:
+
+```bash
+GITHUB_TOKEN="ghp_your_token_here"
+```
+
+### Examples
+
+```bash
+# Ingest merged PRs from a public repo
+pnpm runner ingest:github facebook/react
+
+# Ingest from your own repo
+pnpm runner ingest:github your-org/your-repo
+```
+
 ## Status
 
 🚧 **Work in progress** — building in public.

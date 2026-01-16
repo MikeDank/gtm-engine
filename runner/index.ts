@@ -54,4 +54,83 @@ program
     }
   });
 
+program
+  .command("ingest:github <repo>")
+  .description("Ingest signals from GitHub repo (e.g., owner/repo)")
+  .action(async (repo: string) => {
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!token) {
+      console.error("Error: GITHUB_TOKEN environment variable is required");
+      console.error("Set it in your .env file or export it in your shell");
+      process.exit(1);
+    }
+
+    const [owner, repoName] = repo.split("/");
+    if (!owner || !repoName) {
+      console.error(
+        "Error: Invalid repo format. Use owner/repo (e.g., facebook/react)"
+      );
+      process.exit(1);
+    }
+
+    console.log(`Fetching merged PRs from GitHub: ${owner}/${repoName}`);
+
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${owner}/${repoName}/pulls?state=closed&sort=updated&direction=desc&per_page=20`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `GitHub API error: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const pulls = (await response.json()) as Array<{
+        number: number;
+        title: string;
+        html_url: string;
+        merged_at: string | null;
+        user: { login: string } | null;
+        body: string | null;
+      }>;
+
+      const mergedPRs = pulls.filter((pr) => pr.merged_at !== null);
+      console.log(`Found ${mergedPRs.length} recently merged PRs`);
+
+      let insertedCount = 0;
+
+      for (const pr of mergedPRs) {
+        const excerpt = `[PR #${pr.number}] ${pr.title}${pr.user ? ` by @${pr.user.login}` : ""}`;
+
+        await db.signal.create({
+          data: {
+            source: pr.html_url,
+            excerpt: excerpt.slice(0, 500),
+            status: "pending",
+            capturedAt: new Date(pr.merged_at!),
+          },
+        });
+
+        insertedCount++;
+        console.log(`  ✓ PR #${pr.number}: ${pr.title.slice(0, 50)}...`);
+      }
+
+      console.log(`\nInserted ${insertedCount} signals from GitHub PRs`);
+    } catch (error) {
+      console.error("Failed to fetch from GitHub:", error);
+      process.exit(1);
+    }
+
+    await db.$disconnect();
+  });
+
 program.parse();

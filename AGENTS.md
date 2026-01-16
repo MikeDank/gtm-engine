@@ -16,6 +16,16 @@
 - `pnpm db:migrate` - Run Prisma migrations
 - `pnpm db:studio` - Open Prisma Studio
 
+## Ingestion Connectors
+
+```bash
+# RSS ingestion
+pnpm runner ingest:rss <url>
+
+# GitHub ingestion (requires GITHUB_TOKEN in .env)
+pnpm runner ingest:github <owner/repo>
+```
+
 ## Ralph Loop
 
 The Ralph autonomous loop runs in two modes:
