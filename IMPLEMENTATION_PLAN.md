@@ -170,7 +170,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add ATTIO_API_KEY to .env.example with instructions
 - [x] Add attioPersonId, attioCompanyId, attioSyncedAt fields to Lead model
 - [x] Run Prisma migration for Attio sync fields
-- [ ] Create Attio client at src/lib/attio/client.ts with upsertCompany, upsertPerson, addNoteToPerson
+- [x] Create Attio client at src/lib/attio/client.ts with upsertCompany, upsertPerson, addNoteToPerson
 - [ ] Create syncLeadToAttio server action at src/app/leads/[id]/actions.ts
 - [ ] Create SyncToAttioButton client component with loading/success/error states
 - [ ] Add SyncToAttioButton and sync status display to lead detail page
