@@ -125,7 +125,21 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update LLM draft generation to create 2 angle-based variants with hypothesis
 - [x] Update DraftMessageDialog to show angle-based variant options
 
-## Phase 9: Polish & Cleanup
+## Phase 9: Export Pipeline v1
+
+- [x] Update exportDripifyCsv function to include all 10 columns (lead_name, company, role, linkedin_url, angle, icp_score, variant_key, hypothesis, message, source_url)
+- [x] Pass ICP score and signal data to Dripify export function
+- [x] Create CopyOutreachPackageButton client component that copies JSON to clipboard
+- [x] Add CopyOutreachPackageButton to lead detail page with all required data
+- [x] Add Touchpoint model to Prisma schema (id, leadId, channel, draftId, status, sentAt, createdAt)
+- [x] Run Prisma migration for Touchpoint model
+- [x] Create server actions for touchpoints (create, list by lead)
+- [x] Create MarkAsSentButton client component for drafts
+- [x] Add MarkAsSentButton to each draft in the drafts list on lead page
+- [x] Create TouchpointsList component to display touchpoints on lead page
+- [x] Add TouchpointsList to lead detail page
+
+## Phase 10: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches

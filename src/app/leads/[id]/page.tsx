@@ -8,23 +8,42 @@ import { getDraftsForLead, getLatestLinkedInDraft } from "@/app/drafts/actions";
 import { DraftMessageDialog } from "@/components/draft-message-dialog";
 import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
+import { CopyOutreachPackageButton } from "@/components/copy-outreach-package-button";
+import { MarkAsSentButton } from "@/components/mark-as-sent-button";
+import { TouchpointsList } from "@/components/touchpoints-list";
+import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-function exportDripifyCsv(
-  leadName: string,
-  company: string | null,
-  message: string
-): string {
+interface DripifyExportData {
+  leadName: string;
+  company: string | null;
+  role: string | null;
+  angle: string | null;
+  icpScore: number;
+  variantKey: string;
+  hypothesis: string | null;
+  message: string;
+  sourceUrl: string | null;
+}
+
+function exportDripifyCsv(data: DripifyExportData): string {
   const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
-  const header = "lead_name,company,linkedin_url,message";
+  const header =
+    "lead_name,company,role,linkedin_url,angle,icp_score,variant_key,hypothesis,message,source_url";
   const row = [
-    escapeCsv(leadName),
-    escapeCsv(company || ""),
+    escapeCsv(data.leadName),
+    escapeCsv(data.company || ""),
+    escapeCsv(data.role || ""),
     '""',
-    escapeCsv(message),
+    escapeCsv(data.angle || ""),
+    String(data.icpScore),
+    escapeCsv(data.variantKey),
+    escapeCsv(data.hypothesis || ""),
+    escapeCsv(data.message),
+    escapeCsv(data.sourceUrl || ""),
   ].join(",");
   return `${header}\n${row}`;
 }
@@ -40,6 +59,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const drafts = await getDraftsForLead(id);
   const latestLinkedInDraft = await getLatestLinkedInDraft(id);
   const icpDoc = await getActiveContextDoc("icp");
+  const touchpoints = await getTouchpointsForLead(id);
 
   const icpScore = scoreLeadWithIcp(
     { name: lead.name, role: lead.role, company: lead.company },
@@ -48,8 +68,50 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   );
 
   const dripifyCsv = latestLinkedInDraft
-    ? exportDripifyCsv(lead.name, lead.company, latestLinkedInDraft.content)
+    ? exportDripifyCsv({
+        leadName: lead.name,
+        company: lead.company,
+        role: lead.role,
+        angle: latestLinkedInDraft.angle,
+        icpScore: icpScore.score,
+        variantKey: latestLinkedInDraft.variantKey,
+        hypothesis: latestLinkedInDraft.hypothesis,
+        message: latestLinkedInDraft.content,
+        sourceUrl: lead.signal?.source || null,
+      })
     : null;
+
+  const outreachPackage = {
+    lead: {
+      id: lead.id,
+      name: lead.name,
+      role: lead.role,
+      company: lead.company,
+    },
+    icp: {
+      score: icpScore.score,
+      reasons: icpScore.reasons,
+    },
+    signal: lead.signal
+      ? {
+          id: lead.signal.id,
+          angle: lead.signal.angle,
+          excerpt: lead.signal.excerpt,
+          sourceUrl: lead.signal.source,
+          capturedAt: lead.signal.capturedAt.toISOString(),
+        }
+      : null,
+    drafts: drafts.map((d) => ({
+      id: d.id,
+      channel: d.channel,
+      subject: d.subject,
+      content: d.content,
+      angle: d.angle,
+      variantKey: d.variantKey,
+      hypothesis: d.hypothesis,
+      createdAt: d.createdAt.toISOString(),
+    })),
+  };
 
   return (
     <div className="space-y-6">
@@ -63,11 +125,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">{lead.name}</h1>
         </div>
-        <DraftMessageDialog
-          leadId={id}
-          hasSignal={!!lead.signal}
-          signalAngle={lead.signal?.angle}
-        />
+        <div className="flex gap-2">
+          <CopyOutreachPackageButton data={outreachPackage} />
+          <DraftMessageDialog
+            leadId={id}
+            hasSignal={!!lead.signal}
+            signalAngle={lead.signal?.angle}
+          />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -179,22 +244,36 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           ) : (
             <div className="space-y-2">
               {drafts.map((draft) => (
-                <Link
+                <div
                   key={draft.id}
-                  href={`/drafts/${draft.id}`}
                   className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
                 >
-                  <div className="flex items-center gap-2">
+                  <Link
+                    href={`/drafts/${draft.id}`}
+                    className="flex flex-1 items-center gap-2"
+                  >
                     <Badge variant="outline">{draft.channel}</Badge>
                     <span className="text-sm">{draft.variantKey}</span>
+                  </Link>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-sm">
+                      {draft.createdAt.toLocaleString()}
+                    </span>
+                    <MarkAsSentButton draftId={draft.id} leadId={id} />
                   </div>
-                  <span className="text-muted-foreground text-sm">
-                    {draft.createdAt.toLocaleString()}
-                  </span>
-                </Link>
+                </div>
               ))}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Touchpoints</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TouchpointsList touchpoints={touchpoints} />
         </CardContent>
       </Card>
     </div>
