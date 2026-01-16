@@ -54,4 +54,30 @@ program
     }
   });
 
+program
+  .command("ingest:github <repo>")
+  .description("Ingest signals from GitHub repo (e.g., owner/repo)")
+  .action(async (repo: string) => {
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!token) {
+      console.error("Error: GITHUB_TOKEN environment variable is required");
+      console.error("Set it in your .env file or export it in your shell");
+      process.exit(1);
+    }
+
+    const [owner, repoName] = repo.split("/");
+    if (!owner || !repoName) {
+      console.error(
+        "Error: Invalid repo format. Use owner/repo (e.g., facebook/react)"
+      );
+      process.exit(1);
+    }
+
+    console.log(`Fetching merged PRs from GitHub: ${owner}/${repoName}`);
+    console.log("TODO: Implement GitHub API call");
+
+    await db.$disconnect();
+  });
+
 program.parse();
