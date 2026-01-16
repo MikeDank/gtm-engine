@@ -83,15 +83,18 @@ model ContextDoc {
 }
 
 model Touchpoint {
-  id        String    @id @default(cuid())
-  leadId    String
-  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  channel   String    // "email" | "linkedin"
-  draftId   String?
-  draft     Draft?    @relation(fields: [draftId], references: [id], onDelete: SetNull)
-  status    String    @default("planned") // "planned" | "sent"
-  sentAt    DateTime?
-  createdAt DateTime  @default(now())
+  id         String    @id @default(cuid())
+  leadId     String
+  lead       Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  channel    String    // "email" | "linkedin"
+  draftId    String?
+  draft      Draft?    @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  status     String    @default("planned") // "planned" | "sent"
+  sentAt     DateTime?
+  plannedFor DateTime? // When follow-up is scheduled
+  subject    String?   // Email subject for planned touchpoints
+  content    String?   // Message content for planned touchpoints
+  createdAt  DateTime  @default(now())
 
   @@index([leadId])
 }
