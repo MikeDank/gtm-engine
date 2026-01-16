@@ -199,7 +199,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create updateLeadPipelineStatus server action at src/app/leads/[id]/actions.ts
 - [x] Auto-update pipeline on email send: set pipelineStatus="contacted" and lastContactedAt=now in sendEmailDraft
 - [x] Auto-update pipeline on touchpoint send: set pipelineStatus="contacted" and lastContactedAt=now in sendPlannedTouchpoint
-- [ ] Create PipelineStatusBadge component at src/components/pipeline-status-badge.tsx
+- [x] Create PipelineStatusBadge component at src/components/pipeline-status-badge.tsx
 - [ ] Create PipelineControls component at src/components/pipeline-controls.tsx with status buttons
 - [ ] Add Pipeline card with PipelineControls to lead detail page
 - [ ] Add stop rule: disable GenerateFollowUpsButton when lead is paused
