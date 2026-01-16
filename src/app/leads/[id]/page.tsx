@@ -14,6 +14,7 @@ import { TouchpointsList } from "@/components/touchpoints-list";
 import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 import { ContactInfoForm } from "@/components/contact-info-form";
 import { SyncToAttioButton } from "@/components/sync-to-attio-button";
+import { GenerateFollowUpsButton } from "@/components/generate-follow-ups-button";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -290,8 +291,9 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Touchpoints</CardTitle>
+          <GenerateFollowUpsButton leadId={id} />
         </CardHeader>
         <CardContent>
           <TouchpointsList touchpoints={touchpoints} />
