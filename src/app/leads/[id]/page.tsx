@@ -13,6 +13,7 @@ import { MarkAsSentButton } from "@/components/mark-as-sent-button";
 import { TouchpointsList } from "@/components/touchpoints-list";
 import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 import { ContactInfoForm } from "@/components/contact-info-form";
+import { SyncToAttioButton } from "@/components/sync-to-attio-button";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -294,6 +295,18 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         </CardHeader>
         <CardContent>
           <TouchpointsList touchpoints={touchpoints} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Attio CRM Sync</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SyncToAttioButton
+            leadId={lead.id}
+            attioSyncedAt={lead.attioSyncedAt}
+          />
         </CardContent>
       </Card>
     </div>
