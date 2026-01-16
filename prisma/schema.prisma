@@ -23,6 +23,7 @@ model Signal {
   status     String    @default("pending")
   capturedAt DateTime
   createdAt  DateTime  @default(now())
+  lead       Lead?
 }
 
 model Lead {
@@ -30,5 +31,7 @@ model Lead {
   name      String
   role      String?
   company   String?
+  signalId  String?  @unique
+  signal    Signal?  @relation(fields: [signalId], references: [id])
   createdAt DateTime @default(now())
 }
