@@ -446,6 +446,16 @@ export async function sendPlannedTouchpointAction(
       },
     });
 
+    if (touchpoint.lead.pipelineStatus === "new") {
+      await db.lead.update({
+        where: { id: touchpoint.leadId },
+        data: {
+          pipelineStatus: "contacted",
+          lastContactedAt: new Date(),
+        },
+      });
+    }
+
     revalidatePath(`/leads/${touchpoint.leadId}`);
 
     return {
