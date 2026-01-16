@@ -15,6 +15,8 @@ import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 import { ContactInfoForm } from "@/components/contact-info-form";
 import { SyncToAttioButton } from "@/components/sync-to-attio-button";
 import { GenerateFollowUpsButton } from "@/components/generate-follow-ups-button";
+import { PipelineControls } from "@/components/pipeline-controls";
+import type { PipelineStatus } from "../actions";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -200,6 +202,18 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Pipeline</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PipelineControls
+            leadId={lead.id}
+            currentStatus={lead.pipelineStatus as PipelineStatus}
+          />
         </CardContent>
       </Card>
 
