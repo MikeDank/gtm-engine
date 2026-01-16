@@ -176,7 +176,23 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add SyncToAttioButton and sync status display to lead detail page
 - [x] Verify end-to-end: sync lead → records created in Attio with note
 
-## Phase 10: Polish & Cleanup
+## Phase 10: Sequencing v1 (Planned Follow-ups)
+
+- [x] Add plannedFor, subject, content fields to Touchpoint model in Prisma schema
+- [x] Run Prisma migration for Touchpoint follow-up fields
+- [x] Create follow-up template generator at src/lib/follow-up-templates.ts (deterministic fallback)
+- [x] Create LLM follow-up prompt generator at src/lib/llm/follow-up-prompt.ts
+- [x] Create generateFollowUps function at src/lib/llm/generate-follow-ups.ts (LLM with template fallback)
+- [x] Add server action generateFollowUps at src/app/leads/[id]/actions.ts
+- [x] Create GenerateFollowUpsButton client component with loading state
+- [x] Add GenerateFollowUpsButton to lead detail page
+- [x] Update TouchpointsList component to display planned vs sent with dates and content
+- [x] Create SendPlannedTouchpointButton client component with confirmation dialog
+- [x] Add server action sendPlannedTouchpoint at src/app/leads/[id]/actions.ts
+- [x] Add SendPlannedTouchpointButton to planned touchpoints in TouchpointsList
+- [x] Add Attio sync prompt after sending follow-up (if attioPersonId exists)
+
+## Phase 11: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches

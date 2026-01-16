@@ -10,6 +10,8 @@ import {
 import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { revalidatePath } from "next/cache";
+import { generateFollowUps as generateFollowUpsLib } from "@/lib/llm/generate-follow-ups";
+import { sendEmail } from "@/lib/email/resend";
 
 export async function createLeadFromSignal(
   signalId: string,
@@ -277,6 +279,141 @@ export async function syncLeadToAttio(
       success: true,
       personId,
       companyId: companyId || undefined,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: message };
+  }
+}
+
+export interface GenerateFollowUpsResult {
+  success: boolean;
+  touchpoints?: { id: string; plannedFor: Date; subject: string }[];
+  usedLlm?: boolean;
+  error?: string;
+}
+
+export async function generateFollowUpsAction(
+  leadId: string
+): Promise<GenerateFollowUpsResult> {
+  try {
+    const result = await generateFollowUpsLib(leadId);
+
+    const now = new Date();
+    const followUp1Date = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const followUp2Date = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+    const touchpoint1 = await db.touchpoint.create({
+      data: {
+        leadId,
+        channel: "email",
+        status: "planned",
+        plannedFor: followUp1Date,
+        subject: result.followUps.followUp1.subject,
+        content: result.followUps.followUp1.content,
+      },
+    });
+
+    const touchpoint2 = await db.touchpoint.create({
+      data: {
+        leadId,
+        channel: "email",
+        status: "planned",
+        plannedFor: followUp2Date,
+        subject: result.followUps.followUp2.subject,
+        content: result.followUps.followUp2.content,
+      },
+    });
+
+    revalidatePath(`/leads/${leadId}`);
+
+    return {
+      success: true,
+      touchpoints: [
+        {
+          id: touchpoint1.id,
+          plannedFor: touchpoint1.plannedFor!,
+          subject: touchpoint1.subject!,
+        },
+        {
+          id: touchpoint2.id,
+          plannedFor: touchpoint2.plannedFor!,
+          subject: touchpoint2.subject!,
+        },
+      ],
+      usedLlm: result.usedLlm,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: message };
+  }
+}
+
+export interface SendPlannedTouchpointResult {
+  success: boolean;
+  error?: string;
+  shouldOfferAttioSync?: boolean;
+  leadId?: string;
+}
+
+export async function sendPlannedTouchpointAction(
+  touchpointId: string
+): Promise<SendPlannedTouchpointResult> {
+  try {
+    const touchpoint = await db.touchpoint.findUnique({
+      where: { id: touchpointId },
+      include: { lead: true },
+    });
+
+    if (!touchpoint) {
+      return { success: false, error: "Touchpoint not found" };
+    }
+
+    if (touchpoint.status !== "planned") {
+      return { success: false, error: "Touchpoint is not in planned status" };
+    }
+
+    if (!touchpoint.content) {
+      return { success: false, error: "Touchpoint has no content to send" };
+    }
+
+    if (!touchpoint.lead.email) {
+      return { success: false, error: "Lead has no email address" };
+    }
+
+    const emailFrom = process.env.EMAIL_FROM;
+    if (!emailFrom) {
+      return {
+        success: false,
+        error: "EMAIL_FROM is not configured in environment",
+      };
+    }
+
+    const result = await sendEmail({
+      to: touchpoint.lead.email,
+      from: emailFrom,
+      subject: touchpoint.subject || "Following up",
+      text: touchpoint.content,
+    });
+
+    if (result.status === "error") {
+      return { success: false, error: result.error };
+    }
+
+    await db.touchpoint.update({
+      where: { id: touchpointId },
+      data: {
+        status: "sent",
+        sentAt: new Date(),
+      },
+    });
+
+    revalidatePath(`/leads/${touchpoint.leadId}`);
+
+    return {
+      success: true,
+      shouldOfferAttioSync: !!touchpoint.lead.attioPersonId,
+      leadId: touchpoint.leadId,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
