@@ -77,7 +77,11 @@ export default async function SignalDetailPage({
         </Card>
       </div>
 
-      <SignalActions signalId={signal.id} currentStatus={signal.status} />
+      <SignalActions
+        signalId={signal.id}
+        currentStatus={signal.status}
+        currentAngle={(signal.angle as Angle) ?? null}
+      />
     </div>
   );
 }

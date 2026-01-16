@@ -24,3 +24,11 @@ export async function updateSignalStatus(id: string, status: string) {
   });
   return signal;
 }
+
+export async function updateSignalAngle(id: string, angle: string | null) {
+  const signal = await db.signal.update({
+    where: { id },
+    data: { angle },
+  });
+  return signal;
+}
