@@ -4,6 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SystemStatus } from "@/components/system-status";
 
 const gettingStarted = [
   {
@@ -32,6 +33,7 @@ export default function Home() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">GTM Engine</h1>
         <p className="text-muted-foreground">Signal → Lead → Outreach → CRM</p>
+        <SystemStatus />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
