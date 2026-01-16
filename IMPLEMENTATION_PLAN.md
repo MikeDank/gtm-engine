@@ -83,7 +83,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Run Prisma migration for LlmSettings model
 - [x] Create LLM types at src/lib/llm/types.ts (LlmConfig, LlmMessage, LlmResponse, DraftOutput)
 - [x] Create OpenAI client at src/lib/llm/openai.ts (chat completions)
-- [ ] Create Anthropic client at src/lib/llm/anthropic.ts (messages API)
+- [x] Create Anthropic client at src/lib/llm/anthropic.ts (messages API)
 - [ ] Create LLM router at src/lib/llm/index.ts (provider selection)
 - [ ] Create evidence-locked draft prompt generator at src/lib/llm/draft-prompt.ts
 - [ ] Add server actions for LLM settings (get, upsert) at src/app/settings/actions.ts
