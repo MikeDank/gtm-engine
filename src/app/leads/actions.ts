@@ -11,6 +11,7 @@ import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { revalidatePath } from "next/cache";
 import { generateFollowUps as generateFollowUpsLib } from "@/lib/llm/generate-follow-ups";
+import { sendEmail } from "@/lib/email/resend";
 
 export async function createLeadFromSignal(
   signalId: string,
@@ -342,6 +343,72 @@ export async function generateFollowUpsAction(
       ],
       usedLlm: result.usedLlm,
     };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: message };
+  }
+}
+
+export interface SendPlannedTouchpointResult {
+  success: boolean;
+  error?: string;
+}
+
+export async function sendPlannedTouchpointAction(
+  touchpointId: string
+): Promise<SendPlannedTouchpointResult> {
+  try {
+    const touchpoint = await db.touchpoint.findUnique({
+      where: { id: touchpointId },
+      include: { lead: true },
+    });
+
+    if (!touchpoint) {
+      return { success: false, error: "Touchpoint not found" };
+    }
+
+    if (touchpoint.status !== "planned") {
+      return { success: false, error: "Touchpoint is not in planned status" };
+    }
+
+    if (!touchpoint.content) {
+      return { success: false, error: "Touchpoint has no content to send" };
+    }
+
+    if (!touchpoint.lead.email) {
+      return { success: false, error: "Lead has no email address" };
+    }
+
+    const emailFrom = process.env.EMAIL_FROM;
+    if (!emailFrom) {
+      return {
+        success: false,
+        error: "EMAIL_FROM is not configured in environment",
+      };
+    }
+
+    const result = await sendEmail({
+      to: touchpoint.lead.email,
+      from: emailFrom,
+      subject: touchpoint.subject || "Following up",
+      text: touchpoint.content,
+    });
+
+    if (result.status === "error") {
+      return { success: false, error: result.error };
+    }
+
+    await db.touchpoint.update({
+      where: { id: touchpointId },
+      data: {
+        status: "sent",
+        sentAt: new Date(),
+      },
+    });
+
+    revalidatePath(`/leads/${touchpoint.leadId}`);
+
+    return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return { success: false, error: message };
