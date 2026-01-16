@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { SendPlannedTouchpointButton } from "./send-planned-touchpoint-button";
 
 interface Touchpoint {
   id: string;
@@ -19,9 +20,13 @@ interface Touchpoint {
 interface TouchpointsListProps {
   touchpoints: Touchpoint[];
   leadId?: string;
+  leadEmail?: string | null;
 }
 
-export function TouchpointsList({ touchpoints, leadId }: TouchpointsListProps) {
+export function TouchpointsList({
+  touchpoints,
+  leadEmail,
+}: TouchpointsListProps) {
   if (touchpoints.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">No touchpoints recorded.</p>
@@ -89,9 +94,13 @@ export function TouchpointsList({ touchpoints, leadId }: TouchpointsListProps) {
             </div>
           )}
 
-          {tp.status === "planned" && tp.content && leadId && (
+          {tp.status === "planned" && tp.content && tp.channel === "email" && (
             <div className="mt-3 flex items-center gap-2">
-              {/* SendPlannedTouchpointButton will be added here */}
+              <SendPlannedTouchpointButton
+                touchpointId={tp.id}
+                leadEmail={leadEmail ?? null}
+                subject={tp.subject}
+              />
             </div>
           )}
         </div>
