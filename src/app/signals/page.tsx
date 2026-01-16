@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SignalStatusBadge } from "@/components/signal-status-badge";
+import { AngleBadge } from "@/components/ui/angle-badge";
 import { getSignals } from "./actions";
 import Link from "next/link";
+import type { Angle } from "@/lib/angles";
 
 interface SignalsPageProps {
   searchParams: Promise<{ status?: string }>;
@@ -70,6 +72,7 @@ export default async function SignalsPage({ searchParams }: SignalsPageProps) {
                 <TableHead>Excerpt</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Angle</TableHead>
                 <TableHead>Captured</TableHead>
               </TableRow>
             </TableHeader>
@@ -89,6 +92,9 @@ export default async function SignalsPage({ searchParams }: SignalsPageProps) {
                   </TableCell>
                   <TableCell>
                     <SignalStatusBadge status={signal.status} />
+                  </TableCell>
+                  <TableCell>
+                    <AngleBadge angle={signal.angle as Angle | null} />
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {signal.capturedAt.toLocaleDateString()}
