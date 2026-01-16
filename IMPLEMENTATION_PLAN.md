@@ -93,7 +93,21 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
 - [x] Handle missing API key gracefully with clear error message in UI
 
-## Phase 7: Polish & Cleanup
+## Phase 7: Context Files (ICP/Tone/Signals)
+
+- [x] Add ContextDoc model to Prisma schema (id, type, title, content, isActive, createdAt)
+- [x] Run Prisma migration for ContextDoc model
+- [x] Create server actions for context docs (create, list, getActive, setActive)
+- [x] Create /context page with upload forms for signals/icp/tone
+- [x] Display active doc preview (first ~30 lines) on /context page
+- [x] Display history list with "Set Active" button for each doc type
+- [x] Add YAML front matter parsing utility for markdown files
+- [x] Implement scoreLeadWithIcp(lead, icpDocContent) deterministic scoring function
+- [x] Show ICP score + reasons on /leads/[id] page
+- [x] Wire tone.md into LLM draft prompt generator
+- [x] Add Context link to navigation
+
+## Phase 8: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches

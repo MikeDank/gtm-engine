@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { getLeadById } from "../actions";
 import { getDraftsForLead, getLatestLinkedInDraft } from "@/app/drafts/actions";
 import { DraftMessageDialog } from "@/components/draft-message-dialog";
+import { getActiveContextDoc } from "@/app/context/actions";
+import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -37,6 +39,13 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
   const drafts = await getDraftsForLead(id);
   const latestLinkedInDraft = await getLatestLinkedInDraft(id);
+  const icpDoc = await getActiveContextDoc("icp");
+
+  const icpScore = scoreLeadWithIcp(
+    { name: lead.name, role: lead.role, company: lead.company },
+    lead.signal ? { excerpt: lead.signal.excerpt } : null,
+    icpDoc?.content || null
+  );
 
   const dripifyCsv = latestLinkedInDraft
     ? exportDripifyCsv(lead.name, lead.company, latestLinkedInDraft.content)
@@ -76,6 +85,32 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">ICP Score</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div
+              className={`text-2xl font-bold ${
+                icpScore.score >= 50
+                  ? "text-green-600"
+                  : icpScore.score >= 30
+                    ? "text-amber-600"
+                    : "text-gray-500"
+              }`}
+            >
+              {icpScore.score}/100
+            </div>
+            <div className="text-muted-foreground text-sm">
+              {icpScore.reasons.map((reason, i) => (
+                <div key={i}>{reason}</div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

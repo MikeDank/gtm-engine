@@ -58,3 +58,14 @@ model LlmSettings {
   dailyCostLimit Float    @default(10.0) // UI only, no enforcement yet
   updatedAt      DateTime @updatedAt
 }
+
+model ContextDoc {
+  id        String   @id @default(cuid())
+  type      String   // "signals" | "icp" | "tone"
+  title     String?
+  content   String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([type, isActive])
+}

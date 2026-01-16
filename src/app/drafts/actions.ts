@@ -8,6 +8,7 @@ import {
   parseDraftResponse,
 } from "@/lib/llm/draft-prompt";
 import { getLlmSettings } from "@/app/settings/actions";
+import { getActiveContextDoc } from "@/app/context/actions";
 import type { DraftChannel } from "@/lib/llm/types";
 
 type Channel = "email" | "linkedin";
@@ -119,6 +120,9 @@ export async function createLlmDrafts(
   }
 
   const settings = await getLlmSettings();
+  const toneDoc = await getActiveContextDoc("tone");
+
+  const toneGuidelines = toneDoc?.content || "short, technical, direct";
 
   const leadContext = {
     name: lead.name,
@@ -139,6 +143,7 @@ export async function createLlmDrafts(
       lead: leadContext,
       signal: signalContext,
       channel,
+      tone: toneGuidelines,
       variantNumber,
     });
 
