@@ -9,6 +9,7 @@ const navItems = [
   { href: "/signals", label: "Signals" },
   { href: "/leads", label: "Leads" },
   { href: "/drafts", label: "Drafts" },
+  { href: "/context", label: "Context" },
   { href: "/settings", label: "Settings" },
 ];
 
