@@ -5,6 +5,9 @@ interface Touchpoint {
   channel: string;
   status: string;
   sentAt: Date | null;
+  plannedFor: Date | null;
+  subject: string | null;
+  content: string | null;
   createdAt: Date;
   draft: {
     id: string;
@@ -15,41 +18,82 @@ interface Touchpoint {
 
 interface TouchpointsListProps {
   touchpoints: Touchpoint[];
+  leadId?: string;
 }
 
-export function TouchpointsList({ touchpoints }: TouchpointsListProps) {
+export function TouchpointsList({ touchpoints, leadId }: TouchpointsListProps) {
   if (touchpoints.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">No touchpoints recorded.</p>
     );
   }
 
+  const sortedTouchpoints = [...touchpoints].sort((a, b) => {
+    if (a.status === "planned" && b.status === "sent") return -1;
+    if (a.status === "sent" && b.status === "planned") return 1;
+    const dateA = a.plannedFor || a.sentAt || a.createdAt;
+    const dateB = b.plannedFor || b.sentAt || b.createdAt;
+    return dateA.getTime() - dateB.getTime();
+  });
+
   return (
-    <div className="space-y-2">
-      {touchpoints.map((tp) => (
+    <div className="space-y-3">
+      {sortedTouchpoints.map((tp) => (
         <div
           key={tp.id}
-          className="flex items-center justify-between rounded-lg border p-3"
+          className={`rounded-lg border p-3 ${
+            tp.status === "planned"
+              ? "border-amber-200 bg-amber-50"
+              : "border-green-200 bg-green-50"
+          }`}
         >
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">{tp.channel}</Badge>
-            <Badge
-              variant={tp.status === "sent" ? "default" : "secondary"}
-              className={tp.status === "sent" ? "bg-green-600" : ""}
-            >
-              {tp.status}
-            </Badge>
-            {tp.draft && (
-              <span className="text-muted-foreground text-sm">
-                {tp.draft.variantKey}
-              </span>
-            )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">{tp.channel}</Badge>
+              <Badge
+                variant={tp.status === "sent" ? "default" : "secondary"}
+                className={
+                  tp.status === "sent"
+                    ? "bg-green-600"
+                    : "bg-amber-500 text-white"
+                }
+              >
+                {tp.status}
+              </Badge>
+              {tp.draft && (
+                <span className="text-muted-foreground text-sm">
+                  {tp.draft.variantKey}
+                </span>
+              )}
+            </div>
+            <span className="text-muted-foreground text-sm">
+              {tp.status === "sent" && tp.sentAt
+                ? `Sent ${tp.sentAt.toLocaleDateString()}`
+                : tp.plannedFor
+                  ? `Scheduled for ${tp.plannedFor.toLocaleDateString()}`
+                  : tp.createdAt.toLocaleDateString()}
+            </span>
           </div>
-          <span className="text-muted-foreground text-sm">
-            {tp.sentAt
-              ? `Sent ${tp.sentAt.toLocaleString()}`
-              : tp.createdAt.toLocaleString()}
-          </span>
+
+          {tp.subject && (
+            <div className="mt-2">
+              <p className="text-sm font-medium">Subject: {tp.subject}</p>
+            </div>
+          )}
+
+          {tp.content && (
+            <div className="mt-2">
+              <p className="line-clamp-3 text-sm whitespace-pre-wrap">
+                {tp.content}
+              </p>
+            </div>
+          )}
+
+          {tp.status === "planned" && tp.content && leadId && (
+            <div className="mt-3 flex items-center gap-2">
+              {/* SendPlannedTouchpointButton will be added here */}
+            </div>
+          )}
         </div>
       ))}
     </div>

@@ -185,7 +185,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create generateFollowUps function at src/lib/llm/generate-follow-ups.ts (LLM with template fallback)
 - [x] Add server action generateFollowUps at src/app/leads/[id]/actions.ts
 - [x] Create GenerateFollowUpsButton client component with loading state
-- [ ] Add GenerateFollowUpsButton to lead detail page
+- [x] Add GenerateFollowUpsButton to lead detail page
 - [ ] Update TouchpointsList component to display planned vs sent with dates and content
 - [ ] Create SendPlannedTouchpointButton client component with confirmation dialog
 - [ ] Add server action sendPlannedTouchpoint at src/app/leads/[id]/actions.ts

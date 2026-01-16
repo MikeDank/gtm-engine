@@ -296,7 +296,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           <GenerateFollowUpsButton leadId={id} />
         </CardHeader>
         <CardContent>
-          <TouchpointsList touchpoints={touchpoints} />
+          <TouchpointsList touchpoints={touchpoints} leadId={id} />
         </CardContent>
       </Card>
 
