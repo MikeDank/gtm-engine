@@ -35,7 +35,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Fetch recent merged PRs from GitHub API using GITHUB_TOKEN
 - [x] Insert GitHub PRs as Signals into DB (source=github, sourceUrl=PR URL)
 - [x] Update README with GitHub ingestion instructions
-- [ ] Verify end-to-end: run `pnpm runner ingest:github <repo>` → signals appear in DB
+- [x] Verify end-to-end: run `pnpm runner ingest:github <repo>` → signals appear in DB
 
 ## Phase 2: Signal Management
 
