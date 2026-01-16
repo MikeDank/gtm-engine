@@ -2,6 +2,13 @@
 
 import { db } from "@/lib/db";
 import { generateDraft } from "@/lib/template-generator";
+import { chat, LlmError } from "@/lib/llm";
+import {
+  generateDraftPrompt,
+  parseDraftResponse,
+} from "@/lib/llm/draft-prompt";
+import { getLlmSettings } from "@/app/settings/actions";
+import type { DraftChannel } from "@/lib/llm/types";
 
 type Channel = "email" | "linkedin";
 type Variant = "short_cold_opener" | "value_first";
@@ -81,4 +88,101 @@ export async function getLatestLinkedInDraft(leadId: string) {
     include: { lead: true },
   });
   return draft;
+}
+
+export interface LlmDraftResult {
+  drafts: Array<{
+    id: string;
+    channel: string;
+    subject: string | null;
+    content: string;
+    variantKey: string;
+  }>;
+  error?: string;
+}
+
+export async function createLlmDrafts(
+  leadId: string,
+  channel: DraftChannel
+): Promise<LlmDraftResult> {
+  const lead = await db.lead.findUnique({
+    where: { id: leadId },
+    include: { signal: true },
+  });
+
+  if (!lead) {
+    return { drafts: [], error: "Lead not found" };
+  }
+
+  if (!lead.signal) {
+    return { drafts: [], error: "Lead has no source signal" };
+  }
+
+  const settings = await getLlmSettings();
+
+  const leadContext = {
+    name: lead.name,
+    role: lead.role,
+    company: lead.company,
+  };
+
+  const signalContext = {
+    excerpt: lead.signal.excerpt,
+    sourceUrl: lead.signal.source,
+    capturedAt: lead.signal.capturedAt,
+  };
+
+  const drafts: LlmDraftResult["drafts"] = [];
+
+  for (const variantNumber of [1, 2]) {
+    const messages = generateDraftPrompt({
+      lead: leadContext,
+      signal: signalContext,
+      channel,
+      variantNumber,
+    });
+
+    try {
+      const response = await chat(
+        {
+          provider: settings.provider,
+          model: settings.model,
+          temperature: settings.temperature,
+          maxTokens: settings.maxTokens,
+        },
+        messages
+      );
+
+      const parsed = parseDraftResponse(response.content);
+
+      const draft = await db.draft.create({
+        data: {
+          leadId,
+          channel,
+          subject: parsed.subject || null,
+          content: parsed.content,
+          variantKey: `llm_${parsed.variantKey}_v${variantNumber}`,
+        },
+      });
+
+      drafts.push({
+        id: draft.id,
+        channel: draft.channel,
+        subject: draft.subject,
+        content: draft.content,
+        variantKey: draft.variantKey,
+      });
+    } catch (error) {
+      if (error instanceof LlmError) {
+        return { drafts, error: error.message };
+      }
+      return {
+        drafts,
+        error:
+          error instanceof Error ? error.message : "Failed to generate draft",
+      };
+    }
+  }
+
+  return { drafts };
 }

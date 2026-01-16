@@ -89,7 +89,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add server actions for LLM settings (get, upsert) at src/app/settings/actions.ts
 - [x] Create Settings page at /settings with provider/model/temperature/maxTokens/dailyCostLimit form
 - [x] Add Settings link to navigation
-- [ ] Add server action to generate LLM draft at src/app/drafts/actions.ts
+- [x] Add server action to generate LLM draft at src/app/drafts/actions.ts
 - [ ] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
 - [ ] Handle missing API key gracefully with clear error message in UI
 
