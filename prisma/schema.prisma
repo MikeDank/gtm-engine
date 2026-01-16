@@ -36,6 +36,9 @@ model Lead {
   linkedinUrl      String?
   enrichedAt       DateTime?
   enrichmentSource String?      // "manual" | "apollo"
+  attioPersonId    String?
+  attioCompanyId   String?
+  attioSyncedAt    DateTime?
   signalId         String?      @unique
   signal           Signal?      @relation(fields: [signalId], references: [id])
   createdAt        DateTime     @default(now())

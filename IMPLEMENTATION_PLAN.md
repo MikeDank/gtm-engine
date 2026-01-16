@@ -168,7 +168,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 ## Phase 9.7: Attio CRM Sync v1
 
 - [x] Add ATTIO_API_KEY to .env.example with instructions
-- [ ] Add attioPersonId, attioCompanyId, attioSyncedAt fields to Lead model
+- [x] Add attioPersonId, attioCompanyId, attioSyncedAt fields to Lead model
 - [ ] Run Prisma migration for Attio sync fields
 - [ ] Create Attio client at src/lib/attio/client.ts with upsertCompany, upsertPerson, addNoteToPerson
 - [ ] Create syncLeadToAttio server action at src/app/leads/[id]/actions.ts
