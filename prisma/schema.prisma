@@ -28,15 +28,19 @@ model Signal {
 }
 
 model Lead {
-  id          String       @id @default(cuid())
-  name        String
-  role        String?
-  company     String?
-  signalId    String?      @unique
-  signal      Signal?      @relation(fields: [signalId], references: [id])
-  createdAt   DateTime     @default(now())
-  drafts      Draft[]
-  touchpoints Touchpoint[]
+  id               String       @id @default(cuid())
+  name             String
+  role             String?
+  company          String?
+  email            String?
+  linkedinUrl      String?
+  enrichedAt       DateTime?
+  enrichmentSource String?      // "manual" | "apollo"
+  signalId         String?      @unique
+  signal           Signal?      @relation(fields: [signalId], references: [id])
+  createdAt        DateTime     @default(now())
+  drafts           Draft[]
+  touchpoints      Touchpoint[]
 }
 
 model Draft {

@@ -139,6 +139,21 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create TouchpointsList component to display touchpoints on lead page
 - [x] Add TouchpointsList to lead detail page
 
+## Phase 9.5: Lead Enrichment (Apollo + Manual)
+
+- [x] Add email, linkedinUrl, enrichedAt, enrichmentSource fields to Lead model
+- [x] Run Prisma migration for Lead contact fields
+- [x] Create Apollo enrichment service at src/lib/apollo.ts
+- [x] Add server actions for manual contact update and Apollo enrichment
+- [x] Create ContactInfoForm component with email/linkedin inputs and save button
+- [x] Add "Enrich with Apollo" button to ContactInfoForm
+- [x] Add Contact Info card to lead detail page
+- [x] Create ContactBadge component for leads table
+- [x] Add Contact column with ContactBadge to leads table
+- [x] Update exportDripifyCsv to include linkedinUrl from lead
+- [x] Update outreach package JSON to include lead.email and lead.linkedinUrl
+- [x] Add APOLLO_API_KEY to .env.example
+
 ## Phase 10: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages

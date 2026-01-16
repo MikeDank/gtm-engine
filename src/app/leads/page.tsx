@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ContactBadge } from "@/components/contact-badge";
 import { getLeads } from "./actions";
 
 export default async function LeadsPage() {
@@ -38,6 +39,7 @@ export default async function LeadsPage() {
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Company</TableHead>
+            <TableHead>Contact</TableHead>
             <TableHead>Created</TableHead>
           </TableRow>
         </TableHeader>
@@ -54,6 +56,12 @@ export default async function LeadsPage() {
               </TableCell>
               <TableCell>{lead.role || "—"}</TableCell>
               <TableCell>{lead.company || "—"}</TableCell>
+              <TableCell>
+                <ContactBadge
+                  hasEmail={!!lead.email}
+                  hasLinkedin={!!lead.linkedinUrl}
+                />
+              </TableCell>
               <TableCell>{lead.createdAt.toLocaleDateString()}</TableCell>
             </TableRow>
           ))}
