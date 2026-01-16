@@ -80,7 +80,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 - [x] Add OPENAI_API_KEY and ANTHROPIC_API_KEY to .env.example with instructions
 - [x] Create LLM settings schema in Prisma (provider, model, temperature, maxTokens, dailyCostLimit)
-- [ ] Run Prisma migration for LlmSettings model
+- [x] Run Prisma migration for LlmSettings model
 - [ ] Create LLM types at src/lib/llm/types.ts (LlmConfig, LlmMessage, LlmResponse, DraftOutput)
 - [ ] Create OpenAI client at src/lib/llm/openai.ts (chat completions)
 - [ ] Create Anthropic client at src/lib/llm/anthropic.ts (messages API)
