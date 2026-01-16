@@ -12,6 +12,7 @@ import { CopyOutreachPackageButton } from "@/components/copy-outreach-package-bu
 import { MarkAsSentButton } from "@/components/mark-as-sent-button";
 import { TouchpointsList } from "@/components/touchpoints-list";
 import { getTouchpointsForLead } from "@/app/touchpoints/actions";
+import { ContactInfoForm } from "@/components/contact-info-form";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -21,6 +22,7 @@ interface DripifyExportData {
   leadName: string;
   company: string | null;
   role: string | null;
+  linkedinUrl: string | null;
   angle: string | null;
   icpScore: number;
   variantKey: string;
@@ -37,7 +39,7 @@ function exportDripifyCsv(data: DripifyExportData): string {
     escapeCsv(data.leadName),
     escapeCsv(data.company || ""),
     escapeCsv(data.role || ""),
-    '""',
+    escapeCsv(data.linkedinUrl || ""),
     escapeCsv(data.angle || ""),
     String(data.icpScore),
     escapeCsv(data.variantKey),
@@ -72,6 +74,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         leadName: lead.name,
         company: lead.company,
         role: lead.role,
+        linkedinUrl: lead.linkedinUrl,
         angle: latestLinkedInDraft.angle,
         icpScore: icpScore.score,
         variantKey: latestLinkedInDraft.variantKey,
@@ -87,6 +90,8 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       name: lead.name,
       role: lead.role,
       company: lead.company,
+      email: lead.email,
+      linkedinUrl: lead.linkedinUrl,
     },
     icp: {
       score: icpScore.score,
@@ -154,6 +159,21 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Contact Info</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ContactInfoForm
+            leadId={lead.id}
+            initialEmail={lead.email}
+            initialLinkedinUrl={lead.linkedinUrl}
+            enrichedAt={lead.enrichedAt}
+            enrichmentSource={lead.enrichmentSource}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
