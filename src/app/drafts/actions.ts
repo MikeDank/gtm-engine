@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { generateDraft } from "@/lib/template-generator";
+import { generateDraft, generateAngleDrafts } from "@/lib/template-generator";
 import { chat, LlmError } from "@/lib/llm";
 import {
   generateDraftPrompt,
@@ -9,7 +9,9 @@ import {
 } from "@/lib/llm/draft-prompt";
 import { getLlmSettings } from "@/app/settings/actions";
 import { getActiveContextDoc } from "@/app/context/actions";
+import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import type { DraftChannel } from "@/lib/llm/types";
+import type { Angle } from "@/lib/angles";
 
 type Channel = "email" | "linkedin";
 type Variant = "short_cold_opener" | "value_first";
@@ -34,7 +36,11 @@ export async function createDraft(
 
   const generated = generateDraft(
     { name: lead.name, role: lead.role, company: lead.company },
-    { excerpt: lead.signal.excerpt, source: lead.signal.source },
+    {
+      excerpt: lead.signal.excerpt,
+      source: lead.signal.source,
+      angle: (lead.signal.angle as Angle) ?? null,
+    },
     channel,
     variant
   );
@@ -46,10 +52,63 @@ export async function createDraft(
       subject: generated.subject,
       content: generated.content,
       variantKey: generated.variantKey,
+      angle: generated.angle,
+      hypothesis: generated.hypothesis,
     },
   });
 
   return draft;
+}
+
+export async function createAngleDrafts(leadId: string, channel: Channel) {
+  const lead = await db.lead.findUnique({
+    where: { id: leadId },
+    include: { signal: true },
+  });
+
+  if (!lead) {
+    throw new Error("Lead not found");
+  }
+
+  if (!lead.signal) {
+    throw new Error("Lead has no source signal");
+  }
+
+  const icpDoc = await getActiveContextDoc("icp");
+  const icpScore = scoreLeadWithIcp(
+    { name: lead.name, role: lead.role, company: lead.company },
+    { excerpt: lead.signal.excerpt },
+    icpDoc?.content || null
+  );
+
+  const generatedDrafts = generateAngleDrafts(
+    { name: lead.name, role: lead.role, company: lead.company },
+    {
+      excerpt: lead.signal.excerpt,
+      source: lead.signal.source,
+      angle: (lead.signal.angle as Angle) ?? null,
+    },
+    channel,
+    { score: icpScore.score, reasons: icpScore.reasons }
+  );
+
+  const createdDrafts = [];
+  for (const generated of generatedDrafts) {
+    const draft = await db.draft.create({
+      data: {
+        leadId,
+        channel: generated.channel,
+        subject: generated.subject,
+        content: generated.content,
+        variantKey: generated.variantKey,
+        angle: generated.angle,
+        hypothesis: generated.hypothesis,
+      },
+    });
+    createdDrafts.push(draft);
+  }
+
+  return createdDrafts;
 }
 
 export async function getDraftsForLead(leadId: string) {
@@ -98,6 +157,8 @@ export interface LlmDraftResult {
     subject: string | null;
     content: string;
     variantKey: string;
+    angle: string | null;
+    hypothesis: string | null;
   }>;
   error?: string;
 }
@@ -121,8 +182,15 @@ export async function createLlmDrafts(
 
   const settings = await getLlmSettings();
   const toneDoc = await getActiveContextDoc("tone");
+  const icpDoc = await getActiveContextDoc("icp");
 
   const toneGuidelines = toneDoc?.content || "short, technical, direct";
+
+  const icpScore = scoreLeadWithIcp(
+    { name: lead.name, role: lead.role, company: lead.company },
+    lead.signal ? { excerpt: lead.signal.excerpt } : null,
+    icpDoc?.content || null
+  );
 
   const leadContext = {
     name: lead.name,
@@ -130,21 +198,35 @@ export async function createLlmDrafts(
     company: lead.company,
   };
 
+  const signalAngle = lead.signal.angle as string | null;
+
   const signalContext = {
     excerpt: lead.signal.excerpt,
     sourceUrl: lead.signal.source,
     capturedAt: lead.signal.capturedAt,
+    angle: signalAngle,
   };
 
+  const icpContext = {
+    score: icpScore.score,
+    reasons: icpScore.reasons,
+  };
+
+  const framings: Array<"metric" | "risk"> = ["metric", "risk"];
   const drafts: LlmDraftResult["drafts"] = [];
 
-  for (const variantNumber of [1, 2]) {
+  for (let i = 0; i < framings.length; i++) {
+    const framing = framings[i];
+    const variantNumber = i + 1;
+
     const messages = generateDraftPrompt({
       lead: leadContext,
       signal: signalContext,
       channel,
       tone: toneGuidelines,
       variantNumber,
+      framing,
+      icp: icpContext,
     });
 
     try {
@@ -160,13 +242,20 @@ export async function createLlmDrafts(
 
       const parsed = parseDraftResponse(response.content);
 
+      const angleFromSignal = signalAngle;
+      const variantKeyWithFraming = signalAngle
+        ? `${signalAngle}_${framing}_llm_v${variantNumber}`
+        : `llm_${parsed.variantKey}_v${variantNumber}`;
+
       const draft = await db.draft.create({
         data: {
           leadId,
           channel,
           subject: parsed.subject || null,
           content: parsed.content,
-          variantKey: `llm_${parsed.variantKey}_v${variantNumber}`,
+          variantKey: variantKeyWithFraming,
+          angle: parsed.angle || angleFromSignal,
+          hypothesis: parsed.hypothesis || null,
         },
       });
 
@@ -176,6 +265,8 @@ export async function createLlmDrafts(
         subject: draft.subject,
         content: draft.content,
         variantKey: draft.variantKey,
+        angle: draft.angle,
+        hypothesis: draft.hypothesis,
       });
     } catch (error) {
       if (error instanceof LlmError) {
