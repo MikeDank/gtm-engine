@@ -352,6 +352,8 @@ export async function generateFollowUpsAction(
 export interface SendPlannedTouchpointResult {
   success: boolean;
   error?: string;
+  shouldOfferAttioSync?: boolean;
+  leadId?: string;
 }
 
 export async function sendPlannedTouchpointAction(
@@ -408,7 +410,11 @@ export async function sendPlannedTouchpointAction(
 
     revalidatePath(`/leads/${touchpoint.leadId}`);
 
-    return { success: true };
+    return {
+      success: true,
+      shouldOfferAttioSync: !!touchpoint.lead.attioPersonId,
+      leadId: touchpoint.leadId,
+    };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return { success: false, error: message };

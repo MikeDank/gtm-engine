@@ -189,7 +189,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update TouchpointsList component to display planned vs sent with dates and content
 - [x] Create SendPlannedTouchpointButton client component with confirmation dialog
 - [x] Add server action sendPlannedTouchpoint at src/app/leads/[id]/actions.ts
-- [ ] Add SendPlannedTouchpointButton to planned touchpoints in TouchpointsList
+- [x] Add SendPlannedTouchpointButton to planned touchpoints in TouchpointsList
 - [ ] Add Attio sync prompt after sending follow-up (if attioPersonId exists)
 
 ## Phase 11: Polish & Cleanup
