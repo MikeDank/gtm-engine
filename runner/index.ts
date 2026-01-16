@@ -75,7 +75,46 @@ program
     }
 
     console.log(`Fetching merged PRs from GitHub: ${owner}/${repoName}`);
-    console.log("TODO: Implement GitHub API call");
+
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${owner}/${repoName}/pulls?state=closed&sort=updated&direction=desc&per_page=20`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `GitHub API error: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const pulls = (await response.json()) as Array<{
+        number: number;
+        title: string;
+        html_url: string;
+        merged_at: string | null;
+        user: { login: string } | null;
+        body: string | null;
+      }>;
+
+      const mergedPRs = pulls.filter((pr) => pr.merged_at !== null);
+      console.log(`Found ${mergedPRs.length} recently merged PRs`);
+
+      for (const pr of mergedPRs) {
+        console.log(`  - PR #${pr.number}: ${pr.title.slice(0, 60)}...`);
+      }
+
+      console.log("\nPRs fetched successfully (DB insert in next task)");
+    } catch (error) {
+      console.error("Failed to fetch from GitHub:", error);
+      process.exit(1);
+    }
 
     await db.$disconnect();
   });
