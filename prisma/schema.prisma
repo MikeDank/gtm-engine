@@ -34,4 +34,17 @@ model Lead {
   signalId  String?  @unique
   signal    Signal?  @relation(fields: [signalId], references: [id])
   createdAt DateTime @default(now())
+  drafts    Draft[]
+}
+
+model Draft {
+  id         String   @id @default(cuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  channel    String   // "email" | "linkedin"
+  subject    String?  // for email only
+  content    String
+  variantKey String   // e.g., "short_cold_opener_v1", "value_first_v1"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

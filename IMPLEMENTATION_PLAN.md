@@ -63,11 +63,18 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 5: Message Drafting (Stub)
 
-- [ ] Add Draft model to Prisma schema (id, leadId, content, createdAt)
-- [ ] Create "Draft Message" button on lead detail
-- [ ] Create template-based draft generator (no LLM)
-- [ ] Create draft editor view with copy-to-clipboard
-- [ ] Add server action to save/update draft
+- [x] Add Draft model to Prisma schema (id, leadId, channel, subject, content, variantKey, createdAt, updatedAt)
+- [x] Run Prisma migration for Draft model
+- [x] Create template generator utility with 2 variants (short cold opener + value-first) for email and LinkedIn
+- [x] Add server action to create draft for a lead (using template generator)
+- [x] Add server action to list drafts for a lead
+- [x] Add server action to update draft content
+- [x] Add "Draft Message" button and dialog on lead detail page (choose channel + variant)
+- [x] Display existing drafts list on lead detail page
+- [x] Create draft detail/editor page at /drafts/[id] with editable textarea and save button
+- [x] Add subject field to draft editor for email drafts
+- [x] Add "Copy to clipboard" button on draft editor page
+- [x] Add "Export for Dripify" button on lead page (CSV export for LinkedIn draft)
 
 ## Phase 6: Polish & Cleanup
 
