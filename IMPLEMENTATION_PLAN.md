@@ -47,7 +47,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 ## Phase 3: Convert Signal to Lead
 
 - [x] Add signalId field to Lead model in Prisma schema (FK to Signal)
-- [ ] Run Prisma migration to add signalId to leads table
+- [x] Run Prisma migration to add signalId to leads table
 - [ ] Add server action to create lead from signal (creates Lead, sets signalId, updates signal status to "converted")
 - [ ] Update "Convert to Lead" button on signal detail page to open a form dialog
 - [ ] Create ConvertToLeadDialog component with name/role/company fields
