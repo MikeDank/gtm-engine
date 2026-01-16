@@ -178,7 +178,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 10: Sequencing v1 (Planned Follow-ups)
 
-- [ ] Add plannedFor, subject, content fields to Touchpoint model in Prisma schema
+- [x] Add plannedFor, subject, content fields to Touchpoint model in Prisma schema
 - [ ] Run Prisma migration for Touchpoint follow-up fields
 - [ ] Create follow-up template generator at src/lib/follow-up-templates.ts (deterministic fallback)
 - [ ] Create LLM follow-up prompt generator at src/lib/llm/follow-up-prompt.ts
