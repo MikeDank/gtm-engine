@@ -154,6 +154,17 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update outreach package JSON to include lead.email and lead.linkedinUrl
 - [x] Add APOLLO_API_KEY to .env.example
 
+## Phase 9.6: Email Sending (Resend)
+
+- [ ] Add RESEND_API_KEY and EMAIL_FROM to .env.example with instructions
+- [ ] Create email sending service at src/lib/email/resend.ts with sendEmail function
+- [ ] Create in-memory rate limiter utility at src/lib/email/rate-limiter.ts (max 5 emails/minute)
+- [ ] Create sendEmailDraft server action at src/app/drafts/actions.ts
+- [ ] Create SendEmailButton client component with confirmation dialog
+- [ ] Add SendEmailButton to /drafts/[id] page for email channel drafts
+- [ ] Add toast notifications for send success/failure feedback
+- [ ] Verify end-to-end: send email draft → touchpoint logged with status "sent"
+
 ## Phase 10: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
