@@ -137,7 +137,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create MarkAsSentButton client component for drafts
 - [x] Add MarkAsSentButton to each draft in the drafts list on lead page
 - [x] Create TouchpointsList component to display touchpoints on lead page
-- [ ] Add TouchpointsList to lead detail page
+- [x] Add TouchpointsList to lead detail page
 
 ## Phase 10: Polish & Cleanup
 

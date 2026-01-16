@@ -10,6 +10,8 @@ import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { CopyOutreachPackageButton } from "@/components/copy-outreach-package-button";
 import { MarkAsSentButton } from "@/components/mark-as-sent-button";
+import { TouchpointsList } from "@/components/touchpoints-list";
+import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -57,6 +59,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const drafts = await getDraftsForLead(id);
   const latestLinkedInDraft = await getLatestLinkedInDraft(id);
   const icpDoc = await getActiveContextDoc("icp");
+  const touchpoints = await getTouchpointsForLead(id);
 
   const icpScore = scoreLeadWithIcp(
     { name: lead.name, role: lead.role, company: lead.company },
@@ -262,6 +265,15 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               ))}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Touchpoints</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TouchpointsList touchpoints={touchpoints} />
         </CardContent>
       </Card>
     </div>
