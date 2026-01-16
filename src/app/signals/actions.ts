@@ -9,3 +9,10 @@ export async function getSignals(status?: string) {
   });
   return signals;
 }
+
+export async function getSignalById(id: string) {
+  const signal = await db.signal.findUnique({
+    where: { id },
+  });
+  return signal;
+}

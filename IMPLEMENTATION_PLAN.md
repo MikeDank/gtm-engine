@@ -24,7 +24,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update `/signals` page to display signals from DB (table/list)
 - [x] Add status badge component for signal status (pending, reviewed, converted, discarded)
 - [x] Implement signal status filter (tabs or dropdown)
-- [ ] Create signal detail view (`/signals/[id]`)
+- [x] Create signal detail view (`/signals/[id]`)
 - [ ] Add server action to update signal status
 - [ ] Wire up status change buttons on signal detail page
 

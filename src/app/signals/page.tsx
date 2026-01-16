@@ -77,7 +77,12 @@ export default async function SignalsPage({ searchParams }: SignalsPageProps) {
               {signals.map((signal) => (
                 <TableRow key={signal.id}>
                   <TableCell className="max-w-md truncate font-medium">
-                    {signal.excerpt.slice(0, 80)}...
+                    <Link
+                      href={`/signals/${signal.id}`}
+                      className="hover:underline"
+                    >
+                      {signal.excerpt.slice(0, 80)}...
+                    </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-xs truncate text-sm">
                     {signal.source}
