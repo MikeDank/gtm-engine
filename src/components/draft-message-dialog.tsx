@@ -11,23 +11,31 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { createDraft, createLlmDrafts } from "@/app/drafts/actions";
+import {
+  createDraft,
+  createLlmDrafts,
+  createAngleDrafts,
+} from "@/app/drafts/actions";
 import { CHANNELS, VARIANTS } from "@/lib/template-generator";
 
 interface DraftMessageDialogProps {
   leadId: string;
   hasSignal: boolean;
+  signalAngle?: string | null;
 }
 
-type DraftMode = "template" | "llm";
+type DraftMode = "template" | "angle" | "llm";
 
 export function DraftMessageDialog({
   leadId,
   hasSignal,
+  signalAngle,
 }: DraftMessageDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<DraftMode>("template");
+  const [mode, setMode] = useState<DraftMode>(
+    signalAngle ? "angle" : "template"
+  );
   const [channel, setChannel] = useState<"email" | "linkedin">("email");
   const [variant, setVariant] = useState<"short_cold_opener" | "value_first">(
     "short_cold_opener"
@@ -45,6 +53,12 @@ export function DraftMessageDialog({
         const draft = await createDraft(leadId, channel, variant);
         setOpen(false);
         router.push(`/drafts/${draft.id}`);
+      } else if (mode === "angle") {
+        const drafts = await createAngleDrafts(leadId, channel);
+        if (drafts.length > 0) {
+          setOpen(false);
+          router.refresh();
+        }
       } else {
         const result = await createLlmDrafts(leadId, channel);
         if (result.error) {
@@ -83,25 +97,42 @@ export function DraftMessageDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Generation Mode</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant={mode === "template" ? "default" : "outline"}
                 onClick={() => setMode("template")}
+                size="sm"
               >
                 Template
               </Button>
+              {signalAngle && (
+                <Button
+                  type="button"
+                  variant={mode === "angle" ? "default" : "outline"}
+                  onClick={() => setMode("angle")}
+                  size="sm"
+                >
+                  Angle-Based
+                </Button>
+              )}
               <Button
                 type="button"
                 variant={mode === "llm" ? "default" : "outline"}
                 onClick={() => setMode("llm")}
+                size="sm"
               >
                 LLM Draft
               </Button>
             </div>
+            {mode === "angle" && (
+              <p className="text-muted-foreground text-sm">
+                Generates 2 variants: metric framing + risk framing.
+              </p>
+            )}
             {mode === "llm" && (
               <p className="text-muted-foreground text-sm">
-                Uses AI to generate 2 evidence-locked variants.
+                Uses AI to generate 2 evidence-locked variants with angle.
               </p>
             )}
           </div>
@@ -156,12 +187,14 @@ export function DraftMessageDialog({
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading
-                ? mode === "llm"
+                ? mode === "llm" || mode === "angle"
                   ? "Generating..."
                   : "Creating..."
                 : mode === "llm"
-                  ? "Generate 2 Variants"
-                  : "Create Draft"}
+                  ? "Generate LLM Variants"
+                  : mode === "angle"
+                    ? "Generate Angle Variants"
+                    : "Create Draft"}
             </Button>
           </div>
         </form>
