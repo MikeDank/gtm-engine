@@ -9,14 +9,14 @@ Drafts are tagged with angle + hypothesis to enable A/B testing.
 
 A small enum/constant list of messaging angles:
 
-| Angle Key             | Description                              |
-| --------------------- | ---------------------------------------- |
-| speed_vs_safety       | Speed vs safety trade-offs               |
-| policy_enforcement    | Policy and enforcement concerns          |
-| migration_risk        | Migration and modernization risks        |
-| incident_reduction    | Incident prevention and reduction        |
-| developer_experience  | Developer productivity and experience    |
-| compliance_auditability | Compliance and audit requirements      |
+| Angle Key               | Description                           |
+| ----------------------- | ------------------------------------- |
+| speed_vs_safety         | Speed vs safety trade-offs            |
+| policy_enforcement      | Policy and enforcement concerns       |
+| migration_risk          | Migration and modernization risks     |
+| incident_reduction      | Incident prevention and reduction     |
+| developer_experience    | Developer productivity and experience |
+| compliance_auditability | Compliance and audit requirements     |
 
 ## Schema Changes
 
@@ -49,16 +49,12 @@ classifyAngleFromSignal(excerpt: string) -> { angle: string | null, reasons: str
 
 1. **incident_reduction** / **speed_vs_safety**:
    - Keywords: "incident", "rollback", "outage", "downtime", "failure", "crash"
-   
 2. **policy_enforcement**:
    - Keywords: "policy", "enforce", "review", "approval", "gate"
-   
 3. **migration_risk**:
    - Keywords: "migrate", "microservices", "auth", "legacy", "modernize", "rewrite"
-   
 4. **developer_experience**:
    - Keywords: "developer experience", "devex", "productivity", "friction", "onboarding"
-   
 5. **compliance_auditability**:
    - Keywords: "compliance", "audit", "regulation", "soc2", "gdpr", "hipaa"
 
@@ -94,12 +90,14 @@ When creating drafts (template or LLM):
 ### Hypothesis Generation
 
 The hypothesis must be grounded in:
+
 - Signal excerpt text
 - ICP scoring reasons
 
 No invented claims allowed.
 
 Example:
+
 - Signal excerpt: "We had 3 major outages this quarter..."
 - ICP reasons: ["Role contains 'platform' (+30)"]
 - Hypothesis: "Angle=incident_reduction will resonate because the signal mentions recent outages and the lead is in a platform role"
