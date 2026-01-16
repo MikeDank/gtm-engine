@@ -88,7 +88,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create evidence-locked draft prompt generator at src/lib/llm/draft-prompt.ts
 - [x] Add server actions for LLM settings (get, upsert) at src/app/settings/actions.ts
 - [x] Create Settings page at /settings with provider/model/temperature/maxTokens/dailyCostLimit form
-- [ ] Add Settings link to navigation
+- [x] Add Settings link to navigation
 - [ ] Add server action to generate LLM draft at src/app/drafts/actions.ts
 - [ ] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
 - [ ] Handle missing API key gracefully with clear error message in UI
