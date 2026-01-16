@@ -9,13 +9,43 @@
 - `pnpm format` - Format code with Prettier
 - No test framework configured yet
 
+## Database
+
+- `pnpm db:up` - Start Postgres container
+- `pnpm db:down` - Stop Postgres container
+- `pnpm db:migrate` - Run Prisma migrations
+- `pnpm db:studio` - Open Prisma Studio
+
+## Ralph Loop
+
+The Ralph autonomous loop runs in two modes:
+
+```bash
+# Planning mode - updates IMPLEMENTATION_PLAN.md from specs
+./loop.sh plan
+
+# Build mode - implements one task per iteration
+./loop.sh build 10    # Run up to 10 iterations
+
+# Stop gracefully
+touch STOP
+```
+
+Key files:
+
+- `loop.sh` - Main loop script
+- `PROMPT_plan.md` - Instructions for planning mode
+- `PROMPT_build.md` - Instructions for build mode
+- `IMPLEMENTATION_PLAN.md` - Ordered task list with checkboxes
+- `specs/` - Product specifications
+
 ## Architecture
 
 Next.js 16 app with React 19, TypeScript, Tailwind CSS v4, and Radix UI primitives.
 
 - `src/app/` - App Router pages (campaigns, signals, leads, drafts)
 - `src/components/` - React components; `ui/` contains shadcn/ui primitives
-- `src/lib/` - Utilities (e.g., `cn()` for className merging)
+- `src/lib/` - Utilities (e.g., `cn()` for className merging, `db` for Prisma)
 - Path alias: `@/*` maps to `src/*`
 
 ## Code Style
