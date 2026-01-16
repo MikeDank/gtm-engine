@@ -134,7 +134,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add Touchpoint model to Prisma schema (id, leadId, channel, draftId, status, sentAt, createdAt)
 - [x] Run Prisma migration for Touchpoint model
 - [x] Create server actions for touchpoints (create, list by lead)
-- [ ] Create MarkAsSentButton client component for drafts
+- [x] Create MarkAsSentButton client component for drafts
 - [ ] Add MarkAsSentButton to each draft in the drafts list on lead page
 - [ ] Create TouchpointsList component to display touchpoints on lead page
 - [ ] Add TouchpointsList to lead detail page
