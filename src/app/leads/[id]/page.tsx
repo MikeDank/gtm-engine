@@ -63,7 +63,11 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">{lead.name}</h1>
         </div>
-        <DraftMessageDialog leadId={id} hasSignal={!!lead.signal} />
+        <DraftMessageDialog
+          leadId={id}
+          hasSignal={!!lead.signal}
+          signalAngle={lead.signal?.angle}
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

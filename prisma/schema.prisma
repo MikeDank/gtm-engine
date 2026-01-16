@@ -21,6 +21,7 @@ model Signal {
   source     String
   excerpt    String
   status     String    @default("pending")
+  angle      String?
   capturedAt DateTime
   createdAt  DateTime  @default(now())
   lead       Lead?
@@ -45,6 +46,8 @@ model Draft {
   subject    String?  // for email only
   content    String
   variantKey String   // e.g., "short_cold_opener_v1", "value_first_v1"
+  angle      String?
+  hypothesis String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

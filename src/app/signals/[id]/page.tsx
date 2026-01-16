@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignalStatusBadge } from "@/components/signal-status-badge";
+import { AngleBadge } from "@/components/ui/angle-badge";
 import { getSignalById } from "../actions";
 import { SignalActions } from "./signal-actions";
+import type { Angle } from "@/lib/angles";
 
 interface SignalDetailPageProps {
   params: Promise<{ id: string }>;
@@ -33,7 +35,10 @@ export default async function SignalDetailPage({
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Signal Detail</h1>
         </div>
-        <SignalStatusBadge status={signal.status} />
+        <div className="flex items-center gap-2">
+          <AngleBadge angle={signal.angle as Angle | null} />
+          <SignalStatusBadge status={signal.status} />
+        </div>
       </div>
 
       <Card>
@@ -72,7 +77,11 @@ export default async function SignalDetailPage({
         </Card>
       </div>
 
-      <SignalActions signalId={signal.id} currentStatus={signal.status} />
+      <SignalActions
+        signalId={signal.id}
+        currentStatus={signal.status}
+        currentAngle={(signal.angle as Angle) ?? null}
+      />
     </div>
   );
 }
