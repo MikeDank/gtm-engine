@@ -10,23 +10,23 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 0: Local Runner + RSS Ingestion
 
-- [ ] Create `runner/` directory with CLI skeleton (using Commander or similar)
-- [ ] Add `pnpm runner` script to package.json
-- [ ] Implement `runner ingest:rss <url>` command (fetch + parse RSS feed)
-- [ ] Insert parsed RSS items as Signals into DB (source=feed URL, excerpt=title+description)
-- [ ] Add `pnpm db:seed` script that inserts demo Signals for development
-- [ ] Add sample RSS feed URLs to README for testing
-- [ ] Verify end-to-end: run `pnpm runner ingest:rss <url>` → signals appear in DB
+- [x] Create `runner/` directory with CLI skeleton (using Commander or similar)
+- [x] Add `pnpm runner` script to package.json
+- [x] Implement `runner ingest:rss <url>` command (fetch + parse RSS feed)
+- [x] Insert parsed RSS items as Signals into DB (source=feed URL, excerpt=title+description)
+- [x] Add `pnpm db:seed` script that inserts demo Signals for development
+- [x] Add sample RSS feed URLs to README for testing
+- [x] Verify end-to-end: run `pnpm runner ingest:rss <url>` → signals appear in DB
 
 ## Phase 1: Signal Inbox (DB-Backed UI)
 
-- [ ] Create server action to fetch all signals from DB
-- [ ] Update `/signals` page to display signals from DB (table/list)
-- [ ] Add status badge component for signal status (pending, reviewed, converted, discarded)
-- [ ] Implement signal status filter (tabs or dropdown)
-- [ ] Create signal detail view (`/signals/[id]`)
-- [ ] Add server action to update signal status
-- [ ] Wire up status change buttons on signal detail page
+- [x] Create server action to fetch all signals from DB
+- [x] Update `/signals` page to display signals from DB (table/list)
+- [x] Add status badge component for signal status (pending, reviewed, converted, discarded)
+- [x] Implement signal status filter (tabs or dropdown)
+- [x] Create signal detail view (`/signals/[id]`)
+- [x] Add server action to update signal status
+- [x] Wire up status change buttons on signal detail page
 
 ## Phase 2: Signal Management
 

@@ -15,14 +15,14 @@ model Campaign {
 }
 
 model Signal {
-  id         String   @id @default(cuid())
-  campaignId String
-  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  id         String    @id @default(cuid())
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
   source     String
   excerpt    String
-  status     String   @default("pending")
+  status     String    @default("pending")
   capturedAt DateTime
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
 }
 
 model Lead {
