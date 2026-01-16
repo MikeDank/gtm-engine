@@ -10,6 +10,7 @@ import {
 import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { revalidatePath } from "next/cache";
+import { generateFollowUps as generateFollowUpsLib } from "@/lib/llm/generate-follow-ups";
 
 export async function createLeadFromSignal(
   signalId: string,
@@ -277,6 +278,69 @@ export async function syncLeadToAttio(
       success: true,
       personId,
       companyId: companyId || undefined,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: message };
+  }
+}
+
+export interface GenerateFollowUpsResult {
+  success: boolean;
+  touchpoints?: { id: string; plannedFor: Date; subject: string }[];
+  usedLlm?: boolean;
+  error?: string;
+}
+
+export async function generateFollowUpsAction(
+  leadId: string
+): Promise<GenerateFollowUpsResult> {
+  try {
+    const result = await generateFollowUpsLib(leadId);
+
+    const now = new Date();
+    const followUp1Date = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const followUp2Date = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+    const touchpoint1 = await db.touchpoint.create({
+      data: {
+        leadId,
+        channel: "email",
+        status: "planned",
+        plannedFor: followUp1Date,
+        subject: result.followUps.followUp1.subject,
+        content: result.followUps.followUp1.content,
+      },
+    });
+
+    const touchpoint2 = await db.touchpoint.create({
+      data: {
+        leadId,
+        channel: "email",
+        status: "planned",
+        plannedFor: followUp2Date,
+        subject: result.followUps.followUp2.subject,
+        content: result.followUps.followUp2.content,
+      },
+    });
+
+    revalidatePath(`/leads/${leadId}`);
+
+    return {
+      success: true,
+      touchpoints: [
+        {
+          id: touchpoint1.id,
+          plannedFor: touchpoint1.plannedFor!,
+          subject: touchpoint1.subject!,
+        },
+        {
+          id: touchpoint2.id,
+          plannedFor: touchpoint2.plannedFor!,
+          subject: touchpoint2.subject!,
+        },
+      ],
+      usedLlm: result.usedLlm,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

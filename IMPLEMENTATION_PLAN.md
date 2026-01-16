@@ -182,7 +182,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Run Prisma migration for Touchpoint follow-up fields
 - [x] Create follow-up template generator at src/lib/follow-up-templates.ts (deterministic fallback)
 - [x] Create LLM follow-up prompt generator at src/lib/llm/follow-up-prompt.ts
-- [ ] Create generateFollowUps function at src/lib/llm/generate-follow-ups.ts (LLM with template fallback)
+- [x] Create generateFollowUps function at src/lib/llm/generate-follow-ups.ts (LLM with template fallback)
 - [ ] Add server action generateFollowUps at src/app/leads/[id]/actions.ts
 - [ ] Create GenerateFollowUpsButton client component with loading state
 - [ ] Add GenerateFollowUpsButton to lead detail page
