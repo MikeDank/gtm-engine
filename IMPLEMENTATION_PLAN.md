@@ -90,7 +90,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create Settings page at /settings with provider/model/temperature/maxTokens/dailyCostLimit form
 - [x] Add Settings link to navigation
 - [x] Add server action to generate LLM draft at src/app/drafts/actions.ts
-- [ ] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
+- [x] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
 - [ ] Handle missing API key gracefully with clear error message in UI
 
 ## Phase 7: Polish & Cleanup
