@@ -204,7 +204,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add Pipeline card with PipelineControls to lead detail page
 - [x] Add stop rule: disable GenerateFollowUpsButton when lead is paused
 - [x] Add stop rule: disable SendPlannedTouchpointButton when lead is paused
-- [ ] Add "Follow-ups paused" banner to lead detail page when lead is paused
+- [x] Add "Follow-ups paused" banner to lead detail page when lead is paused
 - [ ] Update TouchpointsList to show visual cue when lead is paused
 - [ ] Update Attio note content to include pipeline status when syncing
 
