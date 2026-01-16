@@ -109,16 +109,16 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 8: Signal Angle Mapping & Draft Variants
 
-- [ ] Create src/lib/angles.ts with ANGLES constant array and Angle type
-- [ ] Add Signal.angle field (nullable string) to Prisma schema
-- [ ] Add Draft.angle and Draft.hypothesis fields (nullable strings) to Prisma schema
-- [ ] Run Prisma migration for angle fields
-- [ ] Implement classifyAngleFromSignal(excerpt) at src/lib/angle-classifier.ts
-- [ ] Create AngleBadge component at src/components/ui/angle-badge.tsx
-- [ ] Update /signals list page to show angle badge for each signal
-- [ ] Update /signals/[id] detail page to show angle badge
-- [ ] Add angle dropdown selector to /signals/[id] for manual override
-- [ ] Create server action to update signal angle
+- [x] Create src/lib/angles.ts with ANGLES constant array and Angle type
+- [x] Add Signal.angle field (nullable string) to Prisma schema
+- [x] Add Draft.angle and Draft.hypothesis fields (nullable strings) to Prisma schema
+- [x] Run Prisma migration for angle fields
+- [x] Implement classifyAngleFromSignal(excerpt) at src/lib/angle-classifier.ts
+- [x] Create AngleBadge component at src/components/ui/angle-badge.tsx
+- [x] Update /signals list page to show angle badge for each signal
+- [x] Update /signals/[id] detail page to show angle badge
+- [x] Add angle dropdown selector to /signals/[id] for manual override
+- [x] Create server action to update signal angle
 - [ ] Update template generator to accept angle and generate 2 framing variants (metric/risk)
 - [ ] Update template generator to generate hypothesis from signal excerpt
 - [ ] Update LLM draft prompt to include angle context
