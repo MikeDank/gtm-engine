@@ -106,11 +106,25 @@ program
       const mergedPRs = pulls.filter((pr) => pr.merged_at !== null);
       console.log(`Found ${mergedPRs.length} recently merged PRs`);
 
+      let insertedCount = 0;
+
       for (const pr of mergedPRs) {
-        console.log(`  - PR #${pr.number}: ${pr.title.slice(0, 60)}...`);
+        const excerpt = `[PR #${pr.number}] ${pr.title}${pr.user ? ` by @${pr.user.login}` : ""}`;
+
+        await db.signal.create({
+          data: {
+            source: pr.html_url,
+            excerpt: excerpt.slice(0, 500),
+            status: "pending",
+            capturedAt: new Date(pr.merged_at!),
+          },
+        });
+
+        insertedCount++;
+        console.log(`  ✓ PR #${pr.number}: ${pr.title.slice(0, 50)}...`);
       }
 
-      console.log("\nPRs fetched successfully (DB insert in next task)");
+      console.log(`\nInserted ${insertedCount} signals from GitHub PRs`);
     } catch (error) {
       console.error("Failed to fetch from GitHub:", error);
       process.exit(1);
