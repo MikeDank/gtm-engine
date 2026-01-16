@@ -46,18 +46,20 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 3: Convert Signal to Lead
 
-- [ ] Create "Convert to Lead" modal/form component
-- [ ] Add server action to create lead from signal
-- [ ] Wire up convert flow: create lead + update signal status to "converted"
-- [ ] Add success feedback after conversion
+- [x] Add signalId field to Lead model in Prisma schema (FK to Signal)
+- [x] Run Prisma migration to add signalId to leads table
+- [x] Add server action to create lead from signal (creates Lead, sets signalId, updates signal status to "converted")
+- [x] Update "Convert to Lead" button on signal detail page to open a form dialog
+- [x] Create ConvertToLeadDialog component with name/role/company fields
+- [x] Wire up convert flow: submit form → create lead → update signal → redirect to lead
 
 ## Phase 4: Leads Management
 
-- [ ] Create server action to fetch all leads from DB
-- [ ] Update `/leads` page to display leads from DB
-- [ ] Create lead detail view (`/leads/[id]`)
-- [ ] Add empty state for leads page when no leads exist
-- [ ] Show source signal reference on lead detail (if available)
+- [x] Create server action to fetch all leads from DB (include source signal)
+- [x] Update `/leads` page to display leads from DB (table with name, role, company, createdAt)
+- [x] Add empty state for leads page when no leads exist
+- [x] Create lead detail view (`/leads/[id]`) with lead info
+- [x] Add "Source Signal" section to lead detail (sourceUrl, excerpt, capturedAt)
 
 ## Phase 5: Message Drafting (Stub)
 
