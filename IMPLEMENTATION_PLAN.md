@@ -56,8 +56,8 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 ## Phase 4: Leads Management
 
 - [x] Create server action to fetch all leads from DB (include source signal)
-- [ ] Update `/leads` page to display leads from DB (table with name, role, company, createdAt)
-- [ ] Add empty state for leads page when no leads exist
+- [x] Update `/leads` page to display leads from DB (table with name, role, company, createdAt)
+- [x] Add empty state for leads page when no leads exist
 - [ ] Create lead detail view (`/leads/[id]`) with lead info
 - [ ] Add "Source Signal" section to lead detail (sourceUrl, excerpt, capturedAt)
 
