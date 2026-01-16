@@ -15,6 +15,8 @@ import { getTouchpointsForLead } from "@/app/touchpoints/actions";
 import { ContactInfoForm } from "@/components/contact-info-form";
 import { SyncToAttioButton } from "@/components/sync-to-attio-button";
 import { GenerateFollowUpsButton } from "@/components/generate-follow-ups-button";
+import { PipelineControls } from "@/components/pipeline-controls";
+import type { PipelineStatus } from "../actions";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -142,6 +144,22 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         </div>
       </div>
 
+      {(lead.pipelineStatus === "replied" ||
+        lead.pipelineStatus === "meeting_booked" ||
+        lead.pipelineStatus === "not_interested") && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <p className="font-medium text-amber-800">
+            Follow-ups paused:{" "}
+            {lead.pipelineStatus === "replied" && "Lead has replied"}
+            {lead.pipelineStatus === "meeting_booked" && "Meeting booked"}
+            {lead.pipelineStatus === "not_interested" && "Lead not interested"}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            No follow-up emails will be sent to this lead.
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
           <CardHeader>
@@ -200,6 +218,18 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Pipeline</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PipelineControls
+            leadId={lead.id}
+            currentStatus={lead.pipelineStatus as PipelineStatus}
+          />
         </CardContent>
       </Card>
 
@@ -293,13 +323,25 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Touchpoints</CardTitle>
-          <GenerateFollowUpsButton leadId={id} />
+          <GenerateFollowUpsButton
+            leadId={id}
+            disabled={
+              lead.pipelineStatus === "replied" ||
+              lead.pipelineStatus === "meeting_booked" ||
+              lead.pipelineStatus === "not_interested"
+            }
+          />
         </CardHeader>
         <CardContent>
           <TouchpointsList
             touchpoints={touchpoints}
             leadId={id}
             leadEmail={lead.email}
+            isPaused={
+              lead.pipelineStatus === "replied" ||
+              lead.pipelineStatus === "meeting_booked" ||
+              lead.pipelineStatus === "not_interested"
+            }
           />
         </CardContent>
       </Card>

@@ -21,11 +21,13 @@ interface TouchpointsListProps {
   touchpoints: Touchpoint[];
   leadId?: string;
   leadEmail?: string | null;
+  isPaused?: boolean;
 }
 
 export function TouchpointsList({
   touchpoints,
   leadEmail,
+  isPaused = false,
 }: TouchpointsListProps) {
   if (touchpoints.length === 0) {
     return (
@@ -43,13 +45,20 @@ export function TouchpointsList({
 
   return (
     <div className="space-y-3">
+      {isPaused && (
+        <p className="text-muted-foreground mb-2 text-sm italic">
+          Follow-ups are paused for this lead.
+        </p>
+      )}
       {sortedTouchpoints.map((tp) => (
         <div
           key={tp.id}
           className={`rounded-lg border p-3 ${
-            tp.status === "planned"
-              ? "border-amber-200 bg-amber-50"
-              : "border-green-200 bg-green-50"
+            isPaused && tp.status === "planned"
+              ? "border-gray-200 bg-gray-50 opacity-60"
+              : tp.status === "planned"
+                ? "border-amber-200 bg-amber-50"
+                : "border-green-200 bg-green-50"
           }`}
         >
           <div className="flex items-center justify-between">
@@ -100,6 +109,7 @@ export function TouchpointsList({
                 touchpointId={tp.id}
                 leadEmail={leadEmail ?? null}
                 subject={tp.subject}
+                isPaused={isPaused}
               />
             </div>
           )}

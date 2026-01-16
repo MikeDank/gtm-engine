@@ -50,6 +50,44 @@ export async function getLeadById(id: string) {
   return lead;
 }
 
+export type PipelineStatus =
+  | "new"
+  | "contacted"
+  | "replied"
+  | "meeting_booked"
+  | "not_interested";
+
+export async function updateLeadPipelineStatus(
+  leadId: string,
+  status: PipelineStatus
+) {
+  const updateData: {
+    pipelineStatus: PipelineStatus;
+    lastContactedAt?: Date;
+    lastRepliedAt?: Date;
+  } = {
+    pipelineStatus: status,
+  };
+
+  if (status === "contacted") {
+    updateData.lastContactedAt = new Date();
+  } else if (
+    status === "replied" ||
+    status === "meeting_booked" ||
+    status === "not_interested"
+  ) {
+    updateData.lastRepliedAt = new Date();
+  }
+
+  const lead = await db.lead.update({
+    where: { id: leadId },
+    data: updateData,
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+  return lead;
+}
+
 export async function updateLeadContactInfo(
   leadId: string,
   data: { email?: string | null; linkedinUrl?: string | null }
@@ -111,6 +149,7 @@ function buildAttioNoteMarkdown(
     company: string | null;
     email: string | null;
     linkedinUrl: string | null;
+    pipelineStatus: string;
   },
   icpScore: { score: number; reasons: string[] },
   signal: {
@@ -140,6 +179,12 @@ function buildAttioNoteMarkdown(
   if (lead.company) lines.push(`- **Company:** ${lead.company}`);
   if (lead.email) lines.push(`- **Email:** ${lead.email}`);
   if (lead.linkedinUrl) lines.push(`- **LinkedIn:** ${lead.linkedinUrl}`);
+  lines.push(`- **Pipeline Status:** ${lead.pipelineStatus}`);
+
+  const pausedStatuses = ["replied", "meeting_booked", "not_interested"];
+  if (pausedStatuses.includes(lead.pipelineStatus)) {
+    lines.push(`- **⚠️ Follow-ups paused**`);
+  }
   lines.push("");
 
   lines.push("## ICP Score");
@@ -407,6 +452,16 @@ export async function sendPlannedTouchpointAction(
         sentAt: new Date(),
       },
     });
+
+    if (touchpoint.lead.pipelineStatus === "new") {
+      await db.lead.update({
+        where: { id: touchpoint.leadId },
+        data: {
+          pipelineStatus: "contacted",
+          lastContactedAt: new Date(),
+        },
+      });
+    }
 
     revalidatePath(`/leads/${touchpoint.leadId}`);
 

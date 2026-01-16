@@ -367,5 +367,15 @@ export async function sendEmailDraft(
     },
   });
 
+  if (draft.lead.pipelineStatus === "new") {
+    await db.lead.update({
+      where: { id: draft.lead.id },
+      data: {
+        pipelineStatus: "contacted",
+        lastContactedAt: new Date(),
+      },
+    });
+  }
+
   return { success: true, messageId: result.id };
 }

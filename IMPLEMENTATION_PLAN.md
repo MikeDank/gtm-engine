@@ -192,7 +192,23 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add SendPlannedTouchpointButton to planned touchpoints in TouchpointsList
 - [x] Add Attio sync prompt after sending follow-up (if attioPersonId exists)
 
-## Phase 11: Polish & Cleanup
+## Phase 11: Reply Tracking v1 (Manual)
+
+- [x] Add pipelineStatus, lastContactedAt, lastRepliedAt fields to Lead model in Prisma schema
+- [x] Run Prisma migration for Lead pipeline fields
+- [x] Create updateLeadPipelineStatus server action at src/app/leads/[id]/actions.ts
+- [x] Auto-update pipeline on email send: set pipelineStatus="contacted" and lastContactedAt=now in sendEmailDraft
+- [x] Auto-update pipeline on touchpoint send: set pipelineStatus="contacted" and lastContactedAt=now in sendPlannedTouchpoint
+- [x] Create PipelineStatusBadge component at src/components/pipeline-status-badge.tsx
+- [x] Create PipelineControls component at src/components/pipeline-controls.tsx with status buttons
+- [x] Add Pipeline card with PipelineControls to lead detail page
+- [x] Add stop rule: disable GenerateFollowUpsButton when lead is paused
+- [x] Add stop rule: disable SendPlannedTouchpointButton when lead is paused
+- [x] Add "Follow-ups paused" banner to lead detail page when lead is paused
+- [x] Update TouchpointsList to show visual cue when lead is paused
+- [x] Update Attio note content to include pipeline status when syncing
+
+## Phase 12: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches
