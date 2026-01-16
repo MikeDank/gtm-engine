@@ -9,6 +9,7 @@ import { DraftMessageDialog } from "@/components/draft-message-dialog";
 import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
 import { CopyOutreachPackageButton } from "@/components/copy-outreach-package-button";
+import { MarkAsSentButton } from "@/components/mark-as-sent-button";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -240,19 +241,24 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           ) : (
             <div className="space-y-2">
               {drafts.map((draft) => (
-                <Link
+                <div
                   key={draft.id}
-                  href={`/drafts/${draft.id}`}
                   className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
                 >
-                  <div className="flex items-center gap-2">
+                  <Link
+                    href={`/drafts/${draft.id}`}
+                    className="flex flex-1 items-center gap-2"
+                  >
                     <Badge variant="outline">{draft.channel}</Badge>
                     <span className="text-sm">{draft.variantKey}</span>
+                  </Link>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-sm">
+                      {draft.createdAt.toLocaleString()}
+                    </span>
+                    <MarkAsSentButton draftId={draft.id} leadId={id} />
                   </div>
-                  <span className="text-muted-foreground text-sm">
-                    {draft.createdAt.toLocaleString()}
-                  </span>
-                </Link>
+                </div>
               ))}
             </div>
           )}
