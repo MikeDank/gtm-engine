@@ -194,7 +194,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 ## Phase 11: Reply Tracking v1 (Manual)
 
-- [ ] Add pipelineStatus, lastContactedAt, lastRepliedAt fields to Lead model in Prisma schema
+- [x] Add pipelineStatus, lastContactedAt, lastRepliedAt fields to Lead model in Prisma schema
 - [ ] Run Prisma migration for Lead pipeline fields
 - [ ] Create updateLeadPipelineStatus server action at src/app/leads/[id]/actions.ts
 - [ ] Auto-update pipeline on email send: set pipelineStatus="contacted" and lastContactedAt=now in sendEmailDraft

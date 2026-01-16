@@ -36,6 +36,9 @@ model Lead {
   linkedinUrl      String?
   enrichedAt       DateTime?
   enrichmentSource String?      // "manual" | "apollo"
+  pipelineStatus   String       @default("new") // "new" | "contacted" | "replied" | "meeting_booked" | "not_interested"
+  lastContactedAt  DateTime?
+  lastRepliedAt    DateTime?
   attioPersonId    String?
   attioCompanyId   String?
   attioSyncedAt    DateTime?
