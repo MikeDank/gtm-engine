@@ -161,9 +161,9 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Create in-memory rate limiter utility at src/lib/email/rate-limiter.ts (max 5 emails/minute)
 - [x] Create sendEmailDraft server action at src/app/drafts/actions.ts
 - [x] Create SendEmailButton client component with confirmation dialog
-- [ ] Add SendEmailButton to /drafts/[id] page for email channel drafts
-- [ ] Add toast notifications for send success/failure feedback
-- [ ] Verify end-to-end: send email draft → touchpoint logged with status "sent"
+- [x] Add SendEmailButton to /drafts/[id] page for email channel drafts
+- [x] Add toast notifications for send success/failure feedback
+- [x] Verify end-to-end: send email draft → touchpoint logged with status "sent"
 
 ## Phase 10: Polish & Cleanup
 
