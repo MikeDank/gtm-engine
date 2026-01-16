@@ -119,11 +119,11 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update /signals/[id] detail page to show angle badge
 - [x] Add angle dropdown selector to /signals/[id] for manual override
 - [x] Create server action to update signal angle
-- [ ] Update template generator to accept angle and generate 2 framing variants (metric/risk)
-- [ ] Update template generator to generate hypothesis from signal excerpt
-- [ ] Update LLM draft prompt to include angle context
-- [ ] Update LLM draft generation to create 2 angle-based variants with hypothesis
-- [ ] Update DraftMessageDialog to show angle-based variant options
+- [x] Update template generator to accept angle and generate 2 framing variants (metric/risk)
+- [x] Update template generator to generate hypothesis from signal excerpt
+- [x] Update LLM draft prompt to include angle context
+- [x] Update LLM draft generation to create 2 angle-based variants with hypothesis
+- [x] Update DraftMessageDialog to show angle-based variant options
 
 ## Phase 9: Polish & Cleanup
 
