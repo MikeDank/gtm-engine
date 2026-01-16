@@ -4,9 +4,21 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 **Format:** `- [ ]` = todo, `- [x]` = done
 
+**Goal:** First 10-15 tasks produce a visible vertical slice: RSS → DB → /signals page shows real rows.
+
 ---
 
-## Phase 1: Signal Inbox (Core Infrastructure)
+## Phase 0: Local Runner + RSS Ingestion
+
+- [ ] Create `runner/` directory with CLI skeleton (using Commander or similar)
+- [ ] Add `pnpm runner` script to package.json
+- [ ] Implement `runner ingest:rss <url>` command (fetch + parse RSS feed)
+- [ ] Insert parsed RSS items as Signals into DB (source=feed URL, excerpt=title+description)
+- [ ] Add `pnpm db:seed` script that inserts demo Signals for development
+- [ ] Add sample RSS feed URLs to README for testing
+- [ ] Verify end-to-end: run `pnpm runner ingest:rss <url>` → signals appear in DB
+
+## Phase 1: Signal Inbox (DB-Backed UI)
 
 - [ ] Create server action to fetch all signals from DB
 - [ ] Update `/signals` page to display signals from DB (table/list)
