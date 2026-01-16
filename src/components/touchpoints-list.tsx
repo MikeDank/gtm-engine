@@ -21,11 +21,13 @@ interface TouchpointsListProps {
   touchpoints: Touchpoint[];
   leadId?: string;
   leadEmail?: string | null;
+  isPaused?: boolean;
 }
 
 export function TouchpointsList({
   touchpoints,
   leadEmail,
+  isPaused = false,
 }: TouchpointsListProps) {
   if (touchpoints.length === 0) {
     return (
@@ -100,6 +102,7 @@ export function TouchpointsList({
                 touchpointId={tp.id}
                 leadEmail={leadEmail ?? null}
                 subject={tp.subject}
+                isPaused={isPaused}
               />
             </div>
           )}

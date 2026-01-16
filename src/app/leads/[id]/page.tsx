@@ -321,6 +321,11 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             touchpoints={touchpoints}
             leadId={id}
             leadEmail={lead.email}
+            isPaused={
+              lead.pipelineStatus === "replied" ||
+              lead.pipelineStatus === "meeting_booked" ||
+              lead.pipelineStatus === "not_interested"
+            }
           />
         </CardContent>
       </Card>

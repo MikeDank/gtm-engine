@@ -21,12 +21,14 @@ interface SendPlannedTouchpointButtonProps {
   touchpointId: string;
   leadEmail: string | null;
   subject?: string | null;
+  isPaused?: boolean;
 }
 
 export function SendPlannedTouchpointButton({
   touchpointId,
   leadEmail,
   subject,
+  isPaused = false,
 }: SendPlannedTouchpointButtonProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ export function SendPlannedTouchpointButton({
   const [syncingAttio, setSyncingAttio] = useState(false);
   const router = useRouter();
 
-  const disabled = !leadEmail;
+  const disabled = !leadEmail || isPaused;
 
   const handleConfirm = async () => {
     setLoading(true);
@@ -81,7 +83,7 @@ export function SendPlannedTouchpointButton({
   if (disabled) {
     return (
       <Button disabled variant="outline" size="sm">
-        Send Now (No email)
+        {isPaused ? "Paused" : "Send Now (No email)"}
       </Button>
     );
   }
