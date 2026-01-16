@@ -30,7 +30,7 @@ interface SendEmailResult {
   error?: string;
 }
 
-function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
+function sendEmail(input: SendEmailInput): Promise<SendEmailResult>;
 ```
 
 - Handle missing RESEND_API_KEY with clear error
