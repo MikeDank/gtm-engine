@@ -16,3 +16,11 @@ export async function getSignalById(id: string) {
   });
   return signal;
 }
+
+export async function updateSignalStatus(id: string, status: string) {
+  const signal = await db.signal.update({
+    where: { id },
+    data: { status },
+  });
+  return signal;
+}
