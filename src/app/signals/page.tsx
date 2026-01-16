@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SignalStatusBadge } from "@/components/signal-status-badge";
 import { getSignals } from "./actions";
 
 export default async function SignalsPage() {
@@ -49,9 +50,7 @@ export default async function SignalsPage() {
                     {signal.source}
                   </TableCell>
                   <TableCell>
-                    <span className="bg-muted rounded-full px-2 py-1 text-xs">
-                      {signal.status}
-                    </span>
+                    <SignalStatusBadge status={signal.status} />
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {signal.capturedAt.toLocaleDateString()}
