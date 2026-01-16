@@ -6,11 +6,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SignalStatusBadge } from "@/components/signal-status-badge";
 import { getSignals } from "./actions";
+import Link from "next/link";
 
-export default async function SignalsPage() {
-  const signals = await getSignals();
+interface SignalsPageProps {
+  searchParams: Promise<{ status?: string }>;
+}
+
+const statusFilters = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "Pending" },
+  { value: "reviewed", label: "Reviewed" },
+  { value: "converted", label: "Converted" },
+  { value: "discarded", label: "Discarded" },
+];
+
+export default async function SignalsPage({ searchParams }: SignalsPageProps) {
+  const { status = "all" } = await searchParams;
+  const signals = await getSignals(status);
 
   return (
     <div className="space-y-6">
@@ -21,12 +36,30 @@ export default async function SignalsPage() {
         </p>
       </div>
 
+      <Tabs value={status} className="w-full">
+        <TabsList>
+          {statusFilters.map((filter) => (
+            <TabsTrigger key={filter.value} value={filter.value} asChild>
+              <Link href={`/signals?status=${filter.value}`}>
+                {filter.label}
+              </Link>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
       {signals.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
-          <p className="text-muted-foreground">No signals yet.</p>
+          <p className="text-muted-foreground">No signals found.</p>
           <p className="text-muted-foreground text-sm">
-            Run <code className="bg-muted px-1 py-0.5">pnpm db:seed</code> or
-            ingest from an RSS feed.
+            {status === "all" ? (
+              <>
+                Run <code className="bg-muted px-1 py-0.5">pnpm db:seed</code>{" "}
+                or ingest from an RSS feed.
+              </>
+            ) : (
+              <>No signals with status &quot;{status}&quot;.</>
+            )}
           </p>
         </div>
       ) : (
