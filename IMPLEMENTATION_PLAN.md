@@ -28,6 +28,15 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add server action to update signal status
 - [x] Wire up status change buttons on signal detail page
 
+## Phase 1.5: GitHub Ingestion Connector
+
+- [x] Add GITHUB_TOKEN to .env.example with instructions
+- [ ] Implement `runner ingest:github <owner/repo>` command skeleton
+- [ ] Fetch recent merged PRs from GitHub API using GITHUB_TOKEN
+- [ ] Insert GitHub PRs as Signals into DB (source=github, sourceUrl=PR URL)
+- [ ] Update README with GitHub ingestion instructions
+- [ ] Verify end-to-end: run `pnpm runner ingest:github <repo>` → signals appear in DB
+
 ## Phase 2: Signal Management
 
 - [ ] Create "Add Signal" form (manual signal input)
