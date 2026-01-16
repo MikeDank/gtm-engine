@@ -26,6 +26,21 @@ pnpm runner ingest:rss <url>
 pnpm runner ingest:github <owner/repo>
 ```
 
+### Connector Architecture
+
+Connectors follow a modular pattern:
+
+- `src/core/types.ts` - `NormalizedSignal` and `Connector` interface
+- `src/pipeline/registry.ts` - Connector registration and lookup
+- `src/pipeline/ingest.ts` - Generic ingestion function
+- `src/connectors/<name>/index.ts` - Individual connector implementations
+
+To add a new connector:
+
+1. Create `src/connectors/<name>/index.ts` exporting a `Connector` object
+2. Register it in `src/connectors/index.ts`
+3. Add a CLI command in `runner/index.ts`
+
 ## Ralph Loop
 
 The Ralph autonomous loop runs in two modes:

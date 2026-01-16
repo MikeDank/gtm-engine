@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import Parser from "rss-parser";
 import { db } from "./db";
+import { registerAllConnectors } from "@/connectors";
+import { ingest } from "@/pipeline/ingest";
+
+registerAllConnectors();
 
 const program = new Command();
-const parser = new Parser();
 
 program
   .name("runner")
@@ -18,31 +20,23 @@ program
     console.log(`Fetching RSS feed: ${url}`);
 
     try {
-      const feed = await parser.parseURL(url);
-      console.log(`Found ${feed.items.length} items in feed: ${feed.title}`);
+      const result = await ingest("rss", url);
+      console.log(`Found ${result.signals.length} items in feed`);
 
       let insertedCount = 0;
 
-      for (const item of feed.items) {
-        const excerpt = [item.title, item.contentSnippet]
-          .filter(Boolean)
-          .join(" - ")
-          .slice(0, 500);
-
-        const source = item.link || url;
-        const capturedAt = item.pubDate ? new Date(item.pubDate) : new Date();
-
+      for (const signal of result.signals) {
         await db.signal.create({
           data: {
-            source,
-            excerpt,
-            status: "pending",
-            capturedAt,
+            source: signal.source,
+            excerpt: signal.excerpt,
+            status: signal.status,
+            capturedAt: signal.capturedAt,
           },
         });
 
         insertedCount++;
-        console.log(`  ✓ ${item.title?.slice(0, 60)}...`);
+        console.log(`  ✓ ${signal.excerpt.slice(0, 60)}...`);
       }
 
       console.log(`\nInserted ${insertedCount} signals into database`);
@@ -58,70 +52,26 @@ program
   .command("ingest:github <repo>")
   .description("Ingest signals from GitHub repo (e.g., owner/repo)")
   .action(async (repo: string) => {
-    const token = process.env.GITHUB_TOKEN;
-
-    if (!token) {
-      console.error("Error: GITHUB_TOKEN environment variable is required");
-      console.error("Set it in your .env file or export it in your shell");
-      process.exit(1);
-    }
-
-    const [owner, repoName] = repo.split("/");
-    if (!owner || !repoName) {
-      console.error(
-        "Error: Invalid repo format. Use owner/repo (e.g., facebook/react)"
-      );
-      process.exit(1);
-    }
-
-    console.log(`Fetching merged PRs from GitHub: ${owner}/${repoName}`);
+    console.log(`Fetching merged PRs from GitHub: ${repo}`);
 
     try {
-      const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repoName}/pulls?state=closed&sort=updated&direction=desc&per_page=20`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `GitHub API error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const pulls = (await response.json()) as Array<{
-        number: number;
-        title: string;
-        html_url: string;
-        merged_at: string | null;
-        user: { login: string } | null;
-        body: string | null;
-      }>;
-
-      const mergedPRs = pulls.filter((pr) => pr.merged_at !== null);
-      console.log(`Found ${mergedPRs.length} recently merged PRs`);
+      const result = await ingest("github", repo);
+      console.log(`Found ${result.signals.length} recently merged PRs`);
 
       let insertedCount = 0;
 
-      for (const pr of mergedPRs) {
-        const excerpt = `[PR #${pr.number}] ${pr.title}${pr.user ? ` by @${pr.user.login}` : ""}`;
-
+      for (const signal of result.signals) {
         await db.signal.create({
           data: {
-            source: pr.html_url,
-            excerpt: excerpt.slice(0, 500),
-            status: "pending",
-            capturedAt: new Date(pr.merged_at!),
+            source: signal.source,
+            excerpt: signal.excerpt,
+            status: signal.status,
+            capturedAt: signal.capturedAt,
           },
         });
 
         insertedCount++;
-        console.log(`  ✓ PR #${pr.number}: ${pr.title.slice(0, 50)}...`);
+        console.log(`  ✓ ${signal.excerpt.slice(0, 60)}...`);
       }
 
       console.log(`\nInserted ${insertedCount} signals from GitHub PRs`);
