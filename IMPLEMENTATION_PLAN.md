@@ -196,7 +196,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 
 - [x] Add pipelineStatus, lastContactedAt, lastRepliedAt fields to Lead model in Prisma schema
 - [x] Run Prisma migration for Lead pipeline fields
-- [ ] Create updateLeadPipelineStatus server action at src/app/leads/[id]/actions.ts
+- [x] Create updateLeadPipelineStatus server action at src/app/leads/[id]/actions.ts
 - [ ] Auto-update pipeline on email send: set pipelineStatus="contacted" and lastContactedAt=now in sendEmailDraft
 - [ ] Auto-update pipeline on touchpoint send: set pipelineStatus="contacted" and lastContactedAt=now in sendPlannedTouchpoint
 - [ ] Create PipelineStatusBadge component at src/components/pipeline-status-badge.tsx

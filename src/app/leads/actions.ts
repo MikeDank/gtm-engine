@@ -50,6 +50,44 @@ export async function getLeadById(id: string) {
   return lead;
 }
 
+export type PipelineStatus =
+  | "new"
+  | "contacted"
+  | "replied"
+  | "meeting_booked"
+  | "not_interested";
+
+export async function updateLeadPipelineStatus(
+  leadId: string,
+  status: PipelineStatus
+) {
+  const updateData: {
+    pipelineStatus: PipelineStatus;
+    lastContactedAt?: Date;
+    lastRepliedAt?: Date;
+  } = {
+    pipelineStatus: status,
+  };
+
+  if (status === "contacted") {
+    updateData.lastContactedAt = new Date();
+  } else if (
+    status === "replied" ||
+    status === "meeting_booked" ||
+    status === "not_interested"
+  ) {
+    updateData.lastRepliedAt = new Date();
+  }
+
+  const lead = await db.lead.update({
+    where: { id: leadId },
+    data: updateData,
+  });
+
+  revalidatePath(`/leads/${leadId}`);
+  return lead;
+}
+
 export async function updateLeadContactInfo(
   leadId: string,
   data: { email?: string | null; linkedinUrl?: string | null }
