@@ -76,7 +76,24 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Add "Copy to clipboard" button on draft editor page
 - [x] Add "Export for Dripify" button on lead page (CSV export for LinkedIn draft)
 
-## Phase 6: Polish & Cleanup
+## Phase 6: BYO LLM Provider Support
+
+- [x] Add OPENAI_API_KEY and ANTHROPIC_API_KEY to .env.example with instructions
+- [ ] Create LLM settings schema in Prisma (provider, model, temperature, maxTokens, dailyCostLimit)
+- [ ] Run Prisma migration for LlmSettings model
+- [ ] Create LLM types at src/lib/llm/types.ts (LlmConfig, LlmMessage, LlmResponse, DraftOutput)
+- [ ] Create OpenAI client at src/lib/llm/openai.ts (chat completions)
+- [ ] Create Anthropic client at src/lib/llm/anthropic.ts (messages API)
+- [ ] Create LLM router at src/lib/llm/index.ts (provider selection)
+- [ ] Create evidence-locked draft prompt generator at src/lib/llm/draft-prompt.ts
+- [ ] Add server actions for LLM settings (get, upsert) at src/app/settings/actions.ts
+- [ ] Create Settings page at /settings with provider/model/temperature/maxTokens/dailyCostLimit form
+- [ ] Add Settings link to navigation
+- [ ] Add server action to generate LLM draft at src/app/drafts/actions.ts
+- [ ] Update DraftMessageDialog with Template/LLM toggle and LLM draft generation (2 variants)
+- [ ] Handle missing API key gracefully with clear error message in UI
+
+## Phase 7: Polish & Cleanup
 
 - [ ] Add loading states to all data-fetching pages
 - [ ] Add error boundaries for failed data fetches
