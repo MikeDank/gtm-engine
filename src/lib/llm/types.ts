@@ -27,6 +27,8 @@ export interface DraftOutput {
   content: string;
   variantKey: string;
   citations_used: string[];
+  angle?: string | null;
+  hypothesis?: string | null;
 }
 
 export interface LeadContext {
@@ -39,6 +41,12 @@ export interface SignalContext {
   excerpt: string;
   sourceUrl: string;
   capturedAt: Date;
+  angle?: string | null;
+}
+
+export interface IcpContext {
+  score: number;
+  reasons: string[];
 }
 
 export type DraftChannel = "email" | "linkedin";
