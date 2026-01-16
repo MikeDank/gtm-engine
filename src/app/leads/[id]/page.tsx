@@ -8,6 +8,7 @@ import { getDraftsForLead, getLatestLinkedInDraft } from "@/app/drafts/actions";
 import { DraftMessageDialog } from "@/components/draft-message-dialog";
 import { getActiveContextDoc } from "@/app/context/actions";
 import { scoreLeadWithIcp } from "@/lib/icp-scoring";
+import { CopyOutreachPackageButton } from "@/components/copy-outreach-package-button";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -76,6 +77,38 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       })
     : null;
 
+  const outreachPackage = {
+    lead: {
+      id: lead.id,
+      name: lead.name,
+      role: lead.role,
+      company: lead.company,
+    },
+    icp: {
+      score: icpScore.score,
+      reasons: icpScore.reasons,
+    },
+    signal: lead.signal
+      ? {
+          id: lead.signal.id,
+          angle: lead.signal.angle,
+          excerpt: lead.signal.excerpt,
+          sourceUrl: lead.signal.source,
+          capturedAt: lead.signal.capturedAt.toISOString(),
+        }
+      : null,
+    drafts: drafts.map((d) => ({
+      id: d.id,
+      channel: d.channel,
+      subject: d.subject,
+      content: d.content,
+      angle: d.angle,
+      variantKey: d.variantKey,
+      hypothesis: d.hypothesis,
+      createdAt: d.createdAt.toISOString(),
+    })),
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -88,11 +121,14 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">{lead.name}</h1>
         </div>
-        <DraftMessageDialog
-          leadId={id}
-          hasSignal={!!lead.signal}
-          signalAngle={lead.signal?.angle}
-        />
+        <div className="flex gap-2">
+          <CopyOutreachPackageButton data={outreachPackage} />
+          <DraftMessageDialog
+            leadId={id}
+            hasSignal={!!lead.signal}
+            signalAngle={lead.signal?.angle}
+          />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

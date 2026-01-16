@@ -130,7 +130,7 @@ This file tracks the ordered list of tasks for building GTM Engine MVP.
 - [x] Update exportDripifyCsv function to include all 10 columns (lead_name, company, role, linkedin_url, angle, icp_score, variant_key, hypothesis, message, source_url)
 - [x] Pass ICP score and signal data to Dripify export function
 - [x] Create CopyOutreachPackageButton client component that copies JSON to clipboard
-- [ ] Add CopyOutreachPackageButton to lead detail page with all required data
+- [x] Add CopyOutreachPackageButton to lead detail page with all required data
 - [ ] Add Touchpoint model to Prisma schema (id, leadId, channel, draftId, status, sentAt, createdAt)
 - [ ] Run Prisma migration for Touchpoint model
 - [ ] Create server actions for touchpoints (create, list by lead)
